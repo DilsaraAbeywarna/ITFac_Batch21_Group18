@@ -5,6 +5,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import starter.pages.LoginPage;
 import net.serenitybdd.annotations.Managed;
+import net.serenitybdd.annotations.Steps;
 import org.openqa.selenium.WebDriver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,10 +15,12 @@ public class LoginSteps {
     @Managed
     WebDriver driver;
     
-    LoginPage loginPage = new LoginPage();
+    @Steps
+    LoginPage loginPage;
 
     @Given("Admin is on the login page")
     public void adminIsOnLoginPage() {
+        loginPage.setDriver(driver);
         loginPage.openPage();
     }
 

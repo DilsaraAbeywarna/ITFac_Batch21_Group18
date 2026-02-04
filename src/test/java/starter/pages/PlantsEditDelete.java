@@ -230,5 +230,19 @@ public class PlantsEditDelete extends PageObject {
             return false;
         }
     }
+
+    // Delete button element
+    @FindBy(css = "a[title='Delete']")
+    private WebElementFacade firstDeleteButton;
+
+    // UI_PLANTDELETE_DELETEBUTTON_13 - Check if Delete button is visible
+    public boolean isDeleteButtonVisible() {
+        try {
+            waitFor(2).seconds();
+            return firstDeleteButton.isVisible();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 
