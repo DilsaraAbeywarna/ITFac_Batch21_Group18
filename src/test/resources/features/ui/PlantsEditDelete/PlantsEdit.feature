@@ -1,4 +1,4 @@
-Feature: Plant Edit Navigation
+Feature: Plant Edit
 
   @admin
   Scenario: UI_PLANTEDIT_NAVIGATION_01 - Navigate to Edit Plant page
