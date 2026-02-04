@@ -220,5 +220,15 @@ public class PlantsEditDelete extends PageObject {
             return false;
         }
     }
+
+    // UI_PLANTEDIT_EDITBUTTON_12 - Check if Edit button is visible
+    public boolean isEditButtonVisible() {
+        try {
+            waitFor(2).seconds();
+            return firstEditButton.isVisible();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 

@@ -250,4 +250,14 @@ public class PlantsEditSteps {
         );
     }
 
+    // UI_PLANTEDIT_EDITBUTTON_12
+
+    @Then("Edit button is not displayed for the Test User role")
+    public void editButtonIsNotDisplayedForTheTestUserRole() {
+        assertTrue(
+            !plantsEditDelete.isEditButtonVisible(),
+            "Edit button should not be visible for Test User role"
+        );
+    }
+
 }

@@ -87,3 +87,9 @@ Feature: Plant Edit Navigation
     Given Test User is logged in and has navigated to the Plant page
     When Test User navigates to the Plant List page
     Then the plant should be listed with a "Low" badge visible near the quantity of stock column
+
+  @testuser
+  Scenario: UI_PLANTEDIT_EDITBUTTON_12 - Verify Edit button visibility for user test role
+    Given Test User is logged in and has navigated to the Plant page
+    When Test User navigates to the Plant List page
+    Then Edit button is not displayed for the Test User role
