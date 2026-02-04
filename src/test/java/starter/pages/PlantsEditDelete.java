@@ -167,5 +167,33 @@ public class PlantsEditDelete extends PageObject {
     public String getCategoryErrorMessage() {
         return categoryErrorMessage.getText();
     }
+
+    public boolean isOnPlantListPage() {
+        waitFor(3).seconds();
+        return getDriver().getCurrentUrl().contains("/ui/plants") && 
+               !getDriver().getCurrentUrl().contains("/ui/plants/edit");
+    }
+
+    public void selectCategoryByVisibleText(String categoryText) {
+        categoryDropdown.selectByVisibleText(categoryText);
+    }
+
+    public void clearAndEnterPlantName(String plantName) {
+        plantNameField.waitUntilVisible();
+        plantNameField.clear();
+        plantNameField.sendKeys(plantName);
+    }
+
+    public void clearAndEnterPrice(String price) {
+        priceField.waitUntilVisible();
+        priceField.clear();
+        priceField.sendKeys(price);
+    }
+
+    public void clearAndEnterQuantity(String quantity) {
+        quantityField.waitUntilVisible();
+        quantityField.clear();
+        quantityField.sendKeys(quantity);
+    }
 }
 

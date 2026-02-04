@@ -54,3 +54,15 @@ Feature: Plant Edit Navigation
     And Admin user selects the "0" category option
     And Admin user clicks the Save button
     Then Admin user should see the category validation error message
+
+  @admin
+  Scenario: UI_PLANTEDIT_SAVEBUTTON_06 - Verify Save button works with valid plant edit data
+    Given Admin user is logged in and on the dashboard
+    When Admin user navigates to the Plant List page
+    And Admin user clicks the Edit button of a plant
+    And Admin user enters a Quantity "150"
+    And Admin user enters a Plant name "TestPlant"
+    And Admin user enters a price "75.50"
+    And Admin user selects the "2" category option
+    And Admin user clicks the Save button
+    Then Plant details are saved successfully and user is redirected to Plant List page

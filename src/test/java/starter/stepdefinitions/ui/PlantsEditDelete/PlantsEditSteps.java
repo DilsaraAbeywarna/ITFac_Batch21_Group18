@@ -165,5 +165,35 @@ public class PlantsEditSteps {
         );
     }
 
+    // UI_PLANTEDIT_SAVEBUTTON_06
+
+    @When("Admin user enters a Quantity {string}")
+    public void adminUserEntersAQuantity(String quantity) {
+        plantsEditDelete.clearAndEnterQuantity(quantity);
+    }
+
+    @When("Admin user enters a Plant name {string}")
+    public void adminUserEntersAPlantName(String plantName) {
+        plantsEditDelete.clearAndEnterPlantName(plantName);
+    }
+
+    @When("Admin user enters a price {string}")
+    public void adminUserEntersAPrice(String price) {
+        plantsEditDelete.clearAndEnterPrice(price);
+    }
+
+    @When("Admin user selects a valid category {string}")
+    public void adminUserSelectsAValidCategory(String category) {
+        plantsEditDelete.selectCategoryByVisibleText(category);
+    }
+
+    @Then("Plant details are saved successfully and user is redirected to Plant List page")
+    public void plantDetailsAreSavedSuccessfullyAndUserIsRedirectedToPlantListPage() {
+        assertTrue(
+            plantsEditDelete.isOnPlantListPage(),
+            "User was not redirected to the Plant List page after saving"
+        );
+    }
+
 }
 
