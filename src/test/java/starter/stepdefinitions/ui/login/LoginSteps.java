@@ -1,4 +1,4 @@
-package starter.stepdefinitions;
+package starter.stepdefinitions.ui.login;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -37,4 +37,5 @@ public class LoginSteps {
     public void verifyError(String message) {
         assertEquals(message, loginPage.getErrorMessage());
     }
+
 }
