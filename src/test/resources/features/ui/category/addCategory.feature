@@ -17,7 +17,6 @@ Feature: Add Category functionality
     And Admin is on the Category List page
     When Admin clicks Add Category button
     And Admin is on the Add Category page
-    And Admin leaves Category Name field empty
     And Admin clicks Save button
     Then System displays validation message "Category name is required" below the Category Name field
     And Category is not created
