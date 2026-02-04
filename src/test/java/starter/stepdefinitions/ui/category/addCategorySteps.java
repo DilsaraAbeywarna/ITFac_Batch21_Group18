@@ -6,6 +6,7 @@ import io.cucumber.java.en.When;
 import io.cucumber.java.en.And;
 import starter.pages.LoginPage;
 import starter.pages.Category.AddCategoryPage;
+import starter.pages.Category.CategoryPage;
 import net.serenitybdd.annotations.Managed;
 import org.openqa.selenium.WebDriver;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,6 +18,7 @@ public class addCategorySteps {
 
     LoginPage loginPage = new LoginPage();
     AddCategoryPage addCategoryPage = new AddCategoryPage();
+    CategoryPage categoryPage = new CategoryPage();
 
     @Given("Admin is logged in")
     public void adminIsLoggedIn() {
@@ -30,16 +32,16 @@ public class addCategorySteps {
 
     @And("Admin is on the Category List page")
     public void adminIsOnCategoryListPage() {
-        addCategoryPage.openPage();
-        assertTrue(addCategoryPage.isOnCategoryListPage(), "Admin is not on category list page");
+        categoryPage.openPage();
+        assertTrue(categoryPage.isOnCategoryListPage(), "Admin is not on category list page");
         System.out.println("Admin is on category list page");
     }
 
     @When("Admin clicks Add Category button")
     public void adminClicksAddCategoryButton() {
-        assertTrue(addCategoryPage.isAddCategoryButtonVisible(), "Add Category button is not visible");
-        assertTrue(addCategoryPage.isAddCategoryButtonClickable(), "Add Category button is not clickable");
-        addCategoryPage.clickAddCategoryButton();
+        assertTrue(categoryPage.isAddCategoryButtonVisible(), "Add Category button is not visible");
+        assertTrue(categoryPage.isAddCategoryButtonClickable(), "Add Category button is not clickable");
+        categoryPage.clickAddCategoryButton();
         System.out.println("Admin clicked Add Category button");
     }
 
@@ -76,19 +78,19 @@ public class addCategorySteps {
 
     @And("System displays a success message")
     public void systemDisplaysSuccessMessage() {
-        assertTrue(addCategoryPage.isSuccessMessageDisplayed(), "Success message is not displayed");
+        assertTrue(categoryPage.isSuccessMessageDisplayed(), "Success message is not displayed");
         System.out.println("System displays a success message");
     }
 
     @And("System navigates back to the Category List page")
     public void systemNavigatesBackToCategoryListPage() {
-        assertTrue(addCategoryPage.isOnCategoryListPage(), "System did not navigate back to Category List page");
+        assertTrue(categoryPage.isOnCategoryListPage(), "System did not navigate back to Category List page");
         System.out.println("System navigated back to the Category List page");
     }
 
     @And("Newly added {string} category appears in the category list")
     public void newlyAddedCategoryAppearsInCategoryList(String categoryName) {
-        assertTrue(addCategoryPage.isCategoryInList(categoryName),
+        assertTrue(categoryPage.isCategoryInList(categoryName),
                 "Category '" + categoryName + "' does not appear in the category list");
         System.out.println("Newly added '" + categoryName + "' category appears in the category list");
     }
