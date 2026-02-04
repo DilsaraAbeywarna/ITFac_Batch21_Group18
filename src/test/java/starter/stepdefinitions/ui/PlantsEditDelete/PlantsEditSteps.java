@@ -215,5 +215,29 @@ public class PlantsEditSteps {
         );
     }
 
-}
+    // UI_PLANTEDIT_VIEWEDITEDLIST_10
 
+    @Given("Test User is logged in and has navigated to the Plant page")
+    public void testUserIsLoggedInAndHasNavigatedToThePlantPage() {
+        loginPage.setDriver(driver);
+        loginPage.openPage();
+        loginPage.enterUsername("testuser");
+        loginPage.enterPassword("test123");
+        loginPage.clickLogin();
+    }
+
+    @When("Test User navigates to the Plant List page")
+    public void testUserNavigatesToThePlantListPage() {
+        plantsEditDelete.setDriver(driver);
+        plantsEditDelete.navigateToPlantsPage();
+    }
+
+    @Then("edited Plant list displayed")
+    public void editedPlantListDisplayed() {
+        assertTrue(
+            plantsEditDelete.isOnPlantListPage(),
+            "Test User is not on the Plant List page"
+        );
+    }
+
+}

@@ -75,3 +75,9 @@ Feature: Plant Edit Navigation
     And Admin user modifies the plant name field
     And Admin user clicks the Cancel button
     Then Admin user is redirected to plants page
+
+  @testuser
+  Scenario: UI_PLANTEDIT_VIEWEDITEDLIST_10 - TestUser can view edited plant list
+    Given Test User is logged in and has navigated to the Plant page
+    When Test User navigates to the Plant List page
+    Then edited Plant list displayed
