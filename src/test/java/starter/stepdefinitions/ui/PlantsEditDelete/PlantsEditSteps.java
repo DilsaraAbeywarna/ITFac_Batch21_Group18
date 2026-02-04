@@ -94,4 +94,30 @@ public class PlantsEditSteps {
             )
         );
     }
+
+    // UI_PLANTEDIT_PRICEVALIDATION_03
+
+    @When("Admin user enters a valid plant name")
+    public void adminUserEntersAValidPlantName() {
+        plantsEditDelete.enterPlantName("Tomato Plant");
+    }
+
+    @When("Admin user clears the price field")
+    public void adminUserClearsThePriceField() {
+        plantsEditDelete.clearPriceField();
+    }
+
+    @Then("Admin user should see the price validation error message")
+    public void adminUserShouldSeeThePriceValidationErrorMessage() {
+        assertAll(
+            () -> assertTrue(
+                plantsEditDelete.isPriceErrorMessageDisplayed(),
+                "Price error message is not displayed"
+            ),
+            () -> assertTrue(
+                plantsEditDelete.getPriceErrorMessage().contains("Price is required"),
+                "Error message does not contain expected text about price requirement"
+            )
+        );
+    }
 }
