@@ -240,4 +240,14 @@ public class PlantsEditSteps {
         );
     }
 
+    // UI_PLANTEDIT_LOWBADGE_11
+
+    @Then("the plant should be listed with a \"Low\" badge visible near the quantity of stock column")
+    public void thePlantShouldBeListedWithALowBadgeVisibleNearTheQuantityOfStockColumn() {
+        assertTrue(
+            plantsEditDelete.isLowBadgeDisplayed(),
+            "Low badge is not displayed for plants with quantity below 5"
+        );
+    }
+
 }

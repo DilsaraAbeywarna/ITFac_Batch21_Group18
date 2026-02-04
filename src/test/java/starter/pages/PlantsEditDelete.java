@@ -207,5 +207,18 @@ public class PlantsEditDelete extends PageObject {
     public String getPlantNameValue() {
         return plantNameField.getValue();
     }
+
+    // Low badge element
+    @FindBy(css = "span.badge.bg-danger.ms-2")
+    private WebElementFacade lowBadge;
+
+    public boolean isLowBadgeDisplayed() {
+        try {
+            waitFor(2).seconds();
+            return lowBadge.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 

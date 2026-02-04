@@ -81,3 +81,9 @@ Feature: Plant Edit Navigation
     Given Test User is logged in and has navigated to the Plant page
     When Test User navigates to the Plant List page
     Then edited Plant list displayed
+
+  @testuser
+  Scenario: UI_PLANTEDIT_LOWBADGE_11 - Verify "Low" badge display for plant quantity below 5 for test user role
+    Given Test User is logged in and has navigated to the Plant page
+    When Test User navigates to the Plant List page
+    Then the plant should be listed with a "Low" badge visible near the quantity of stock column
