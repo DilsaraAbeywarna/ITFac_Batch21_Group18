@@ -35,6 +35,10 @@ public class PlantsEditDelete extends PageObject {
     @FindBy(css = "button.btn-primary")
     private WebElementFacade saveButton;
 
+    // Cancel button
+    @FindBy(css = "a.btn.btn-secondary")
+    private WebElementFacade cancelButton;
+
     // Plant name error message
     @FindBy(css = "div.text-danger")
     private WebElementFacade errorMessage;
@@ -194,6 +198,14 @@ public class PlantsEditDelete extends PageObject {
         quantityField.waitUntilVisible();
         quantityField.clear();
         quantityField.sendKeys(quantity);
+    }
+
+    public void clickCancelButton() {
+        cancelButton.waitUntilClickable().click();
+    }
+
+    public String getPlantNameValue() {
+        return plantNameField.getValue();
     }
 }
 

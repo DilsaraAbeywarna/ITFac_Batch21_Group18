@@ -195,5 +195,25 @@ public class PlantsEditSteps {
         );
     }
 
+    // UI_PLANTEDIT_CANCELBUTTON_07
+
+    @When("Admin user modifies the plant name field")
+    public void adminUserModifiesThePlantNameField() {
+        plantsEditDelete.clearAndEnterPlantName("ModifiedPlantName");
+    }
+
+    @When("Admin user clicks the Cancel button")
+    public void adminUserClicksTheCancelButton() {
+        plantsEditDelete.clickCancelButton();
+    }
+
+    @Then("Admin user is redirected to plants page")
+    public void adminUserIsRedirectedToPlantsPage() {
+        assertTrue(
+            plantsEditDelete.isOnPlantListPage(),
+            "Admin user was not redirected to the Plant List page after clicking Cancel"
+        );
+    }
+
 }
 

@@ -66,3 +66,12 @@ Feature: Plant Edit Navigation
     And Admin user selects the "2" category option
     And Admin user clicks the Save button
     Then Plant details are saved successfully and user is redirected to Plant List page
+
+  @admin
+  Scenario: UI_PLANTEDIT_CANCELBUTTON_07 - Verify Cancel button navigation from Plant page
+    Given Admin user is logged in and on the dashboard
+    When Admin user navigates to the Plant List page
+    And Admin user clicks the Edit button of a plant
+    And Admin user modifies the plant name field
+    And Admin user clicks the Cancel button
+    Then Admin user is redirected to plants page
