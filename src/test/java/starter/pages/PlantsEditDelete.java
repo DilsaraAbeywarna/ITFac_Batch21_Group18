@@ -143,7 +143,12 @@ public class PlantsEditDelete extends PageObject {
 
     public void selectCategoryByValue(String categoryValue) {
         WebElementFacade categorySelect = find(By.id("categoryId"));
-        categorySelect.selectByValue(categoryValue);
+        // Handle both empty string ("") and "0" to represent the default/empty option
+        if (categoryValue.equals("0") || categoryValue.isEmpty()) {
+            categorySelect.selectByValue("");
+        } else {
+            categorySelect.selectByValue(categoryValue);
+        }
     }
 
     public void selectDefaultCategory() {

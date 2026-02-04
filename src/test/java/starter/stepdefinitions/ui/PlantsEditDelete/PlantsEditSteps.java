@@ -20,8 +20,7 @@ public class PlantsEditSteps {
     @Steps
     PlantsEditDelete plantsEditDelete;
 
-    @Steps
-    LoginPage loginPage;
+     private LoginPage loginPage = new LoginPage();
 
     // UI_PLANTEDIT_NAVIGATION_01
 
@@ -147,9 +146,9 @@ public class PlantsEditSteps {
 
     // UI_PLANTEDIT_CATEGORYVALIDATION_05
 
-    @When("Admin user selects the default category option")
-    public void adminUserSelectsTheDefaultCategoryOption() {
-        plantsEditDelete.selectDefaultCategory();
+    @When("Admin user selects the {string} category option")
+    public void adminUserSelectsTheCategoryOption(String categoryValue) {
+        plantsEditDelete.selectCategoryByValue(categoryValue);
     }
 
     @Then("Admin user should see the category validation error message")

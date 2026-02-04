@@ -42,6 +42,7 @@ Feature: Plant Edit Navigation
     And Admin user enters "50" in the price field
     And Admin user clicks the Save button
     Then Admin user should see the quantity validation error message
+    
   @admin
   Scenario: UI_PLANTEDIT_CATEGORYVALIDATION_05 - Verify edit page Category selection validation
     Given Admin user is logged in and on the dashboard
@@ -50,6 +51,6 @@ Feature: Plant Edit Navigation
     And Admin user enters "100" in the quantity field
     And Admin user enters a valid plant name
     And Admin user enters "50" in the price field
-    And Admin user selects the default category option
+    And Admin user selects the "0" category option
     And Admin user clicks the Save button
     Then Admin user should see the category validation error message
