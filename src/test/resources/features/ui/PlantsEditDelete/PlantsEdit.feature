@@ -30,3 +30,15 @@ Feature: Plant Edit Navigation
     And Admin user clears the price field
     And Admin user clicks the Save button
     Then Admin user should see the price validation error message
+
+  @admin
+  Scenario: UI_PLANTEDIT_QUANTITYVALIDATION_04 - Verify edit page Quantity field validation
+    Given Admin user is logged in and on the dashboard
+    When Admin user navigates to the Plant List page
+    And Admin user clicks the Edit button of a plant
+    And Admin user selects a valid sub-category
+    And Admin user enters a valid plant name
+    And Admin user clears the quantity field
+    And Admin user enters "50" in the price field
+    And Admin user clicks the Save button
+    Then Admin user should see the quantity validation error message

@@ -120,4 +120,26 @@ public class PlantsEditSteps {
             )
         );
     }
+
+    //UI_PLANTEDIT_QUANTITYVALIDATION_04
+
+     @When("Admin user clears the quantity field")
+    public void adminUserClearsThequantityField() {
+        plantsEditDelete.clearquantityField();
+    }
+
+     @Then("Admin user should see the quantity validation error message")
+    public void adminUserShouldSeeThequantityValidationErrorMessage() {
+        assertAll(
+            () -> assertTrue(
+                plantsEditDelete.isquantityErrorMessageDisplayed(),
+                "quantity error message is not displayed"
+            ),
+            () -> assertTrue(
+                plantsEditDelete.getquantityErrorMessage().contains("Quantity is required"),
+                "Error message does not contain expected text about quantity requirement"
+            )
+        );
+    }
+
 }

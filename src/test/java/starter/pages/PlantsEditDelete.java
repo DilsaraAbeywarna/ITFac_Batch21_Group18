@@ -39,6 +39,12 @@ public class PlantsEditDelete extends PageObject {
     @FindBy(xpath = "//label[text()='Price']/following-sibling::input/following-sibling::div[@class='text-danger']")
     private WebElementFacade priceErrorMessage;
 
+    //quantity error message
+    @FindBy(xpath = "//input[@id='quantity']/following-sibling::div[@class='text-danger']")
+    private WebElementFacade quantityErrorMessage;
+
+    
+
     public void navigateToPlantsPage() {
         managePlantsButton.waitUntilClickable().click();
     }
@@ -109,5 +115,21 @@ public class PlantsEditDelete extends PageObject {
 
     public String getPriceErrorMessage() {
         return priceErrorMessage.getText();
+    }
+
+     public void clearquantityField() {
+        quantityField.clear();
+    }
+
+        public boolean isquantityErrorMessageDisplayed() {
+        try {
+            return quantityErrorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getquantityErrorMessage() {
+        return quantityErrorMessage.getText();
     }
 }
