@@ -20,12 +20,14 @@ public class PlantsEditSteps {
     @Steps
     PlantsEditDelete plantsEditDelete;
 
-    private LoginPage loginPage = new LoginPage();
+    @Steps
+    LoginPage loginPage;
 
     // UI_PLANTEDIT_NAVIGATION_01
 
     @Given("Admin user is logged in and on the dashboard")
     public void adminUserIsLoggedInAndOnTheDashboard() {
+        loginPage.setDriver(driver);
         loginPage.openPage();
         loginPage.enterUsername("admin");
         loginPage.enterPassword("admin123");
@@ -34,6 +36,7 @@ public class PlantsEditSteps {
 
     @When("Admin user navigates to the Plant List page")
     public void adminUserNavigatesToThePlantListPage() {
+        plantsEditDelete.setDriver(driver);
         plantsEditDelete.navigateToPlantsPage();
     }
 
@@ -142,4 +145,26 @@ public class PlantsEditSteps {
         );
     }
 
+    // UI_PLANTEDIT_CATEGORYVALIDATION_05
+
+    @When("Admin user selects the default category option")
+    public void adminUserSelectsTheDefaultCategoryOption() {
+        plantsEditDelete.selectDefaultCategory();
+    }
+
+    @Then("Admin user should see the category validation error message")
+    public void adminUserShouldSeeTheCategoryValidationErrorMessage() {
+        assertAll(
+            () -> assertTrue(
+                plantsEditDelete.isCategoryErrorMessageDisplayed(),
+                "Category error message is not displayed"
+            ),
+            () -> assertTrue(
+                plantsEditDelete.getCategoryErrorMessage().contains("Category is required"),
+                "Error message does not contain expected text about category requirement"
+            )
+        );
+    }
+
 }
+

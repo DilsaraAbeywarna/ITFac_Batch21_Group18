@@ -27,6 +27,10 @@ public class PlantsEditDelete extends PageObject {
     @FindBy(css = "input[name='quantity']")
     private WebElementFacade quantityField;
 
+    // Category dropdown field
+    @FindBy(id = "categoryId")
+    private WebElementFacade categoryDropdown;
+
     // Save button
     @FindBy(css = "button.btn-primary")
     private WebElementFacade saveButton;
@@ -34,6 +38,10 @@ public class PlantsEditDelete extends PageObject {
     // Plant name error message
     @FindBy(css = "div.text-danger")
     private WebElementFacade errorMessage;
+
+    // Category error message
+    @FindBy(xpath = "//select[@id='categoryId']/following-sibling::div[@class='text-danger']")
+    private WebElementFacade categoryErrorMessage;
 
     // Price error message
     @FindBy(xpath = "//label[text()='Price']/following-sibling::input/following-sibling::div[@class='text-danger']")
@@ -132,4 +140,27 @@ public class PlantsEditDelete extends PageObject {
     public String getquantityErrorMessage() {
         return quantityErrorMessage.getText();
     }
+
+    public void selectCategoryByValue(String categoryValue) {
+        WebElementFacade categorySelect = find(By.id("categoryId"));
+        categorySelect.selectByValue(categoryValue);
+    }
+
+    public void selectDefaultCategory() {
+        WebElementFacade categorySelect = find(By.id("categoryId"));
+        categorySelect.selectByValue("");
+    }
+
+    public boolean isCategoryErrorMessageDisplayed() {
+        try {
+            return categoryErrorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String getCategoryErrorMessage() {
+        return categoryErrorMessage.getText();
+    }
 }
+
