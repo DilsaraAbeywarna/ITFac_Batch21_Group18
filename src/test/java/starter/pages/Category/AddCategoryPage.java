@@ -22,6 +22,10 @@ public class AddCategoryPage extends PageObject {
     @FindBy(css = "button[type='submit'].btn.btn-primary")
     public WebElementFacade saveButton;
 
+    // Cancel button - NEW
+    @FindBy(css = "a[href='/ui/categories'].btn.btn-secondary")
+    public WebElementFacade cancelButton;
+
     // Success message
     @FindBy(css = ".alert-success, .alert.alert-success")
     public WebElementFacade successMessage;
@@ -74,6 +78,27 @@ public class AddCategoryPage extends PageObject {
         System.out.println("Clicked Save button");
         // Wait for page to start processing after save
         waitABit(1000);
+    }
+
+    // NEW METHOD - Click Cancel button
+    public void clickCancelButton() {
+        cancelButton.waitUntilClickable().click();
+        System.out.println("Clicked Cancel button");
+        // Wait for navigation to complete
+        waitABit(1000);
+    }
+
+    // NEW METHOD - Check if Cancel button is visible
+    public boolean isCancelButtonVisible() {
+        try {
+            cancelButton.waitUntilVisible();
+            boolean isVisible = cancelButton.isVisible();
+            System.out.println("Cancel button visibility: " + isVisible);
+            return isVisible;
+        } catch (Exception e) {
+            System.out.println("Cancel button not found: " + e.getMessage());
+            return false;
+        }
     }
 
     public void waitForSaveCompletion() {
