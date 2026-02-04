@@ -43,6 +43,12 @@ public class addCategorySteps {
         System.out.println("Admin clicked Add Category button");
     }
 
+    @And("Admin is on the Add Category page")
+    public void adminIsOnAddCategoryPage() {
+        assertTrue(addCategoryPage.isOnAddCategoryPage(), "Admin is not on Add Category page");
+        System.out.println("Admin is on Add Category page");
+    }
+
     @And("Admin enters Category Name as {string}")
     public void adminEntersCategoryNameAs(String categoryName) {
         addCategoryPage.enterCategoryName(categoryName);
@@ -85,5 +91,32 @@ public class addCategorySteps {
         assertTrue(addCategoryPage.isCategoryInList(categoryName),
                 "Category '" + categoryName + "' does not appear in the category list");
         System.out.println("Newly added '" + categoryName + "' category appears in the category list");
+    }
+
+    @And("Admin leaves Category Name field empty")
+    public void adminLeavesCategoryNameFieldEmpty() {
+        // Verify that the category name input field is empty
+        String categoryNameValue = addCategoryPage.getCategoryNameValue();
+        assertTrue(categoryNameValue.isEmpty(), "Category Name field is not empty");
+        System.out.println("Admin left Category Name field empty");
+    }
+
+    @Then("System displays validation message {string} below the Category Name field")
+    public void systemDisplaysValidationMessageBelowCategoryNameField(String expectedMessage) {
+        assertTrue(addCategoryPage.isValidationMessageDisplayed(),
+                "Validation message is not displayed below Category Name field");
+        String actualMessage = addCategoryPage.getValidationMessageText();
+        assertTrue(actualMessage.toLowerCase().contains(expectedMessage.toLowerCase()),
+                "Validation message '" + actualMessage + "' does not contain expected text: " + expectedMessage);
+        System.out.println("System displays validation message: " + actualMessage);
+    }
+
+    @And("Category is not created")
+    public void categoryIsNotCreated() {
+        // Verify we are still on the Add Category page (not redirected to category
+        // list)
+        assertTrue(addCategoryPage.isOnAddCategoryPage(),
+                "System navigated away from Add Category page - category may have been created");
+        System.out.println("Category is not created - still on Add Category page");
     }
 }

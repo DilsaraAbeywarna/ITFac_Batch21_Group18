@@ -46,6 +46,10 @@ public class AddCategoryPage extends PageObject {
     @FindBy(css = ".alert-success, .alert.alert-success")
     public WebElementFacade successMessage;
 
+    // Validation error message for Category Name field
+    @FindBy(xpath = "//input[@id='name']/following-sibling::div[@class='invalid-feedback'] | //input[@id='name']/parent::div//div[contains(@class, 'invalid-feedback')] | //input[@id='name']/parent::div//span[contains(text(), 'required')]")
+    public WebElementFacade categoryNameValidationMessage;
+
     public void openPage() {
         getDriver().get("http://localhost:8080/ui/categories");
         System.out.println("Explicitly navigated to: " + getDriver().getCurrentUrl());
@@ -210,5 +214,41 @@ public class AddCategoryPage extends PageObject {
 
     public String getCategoryNameValue() {
         return categoryNameInput.getValue();
+    }
+
+    public boolean isValidationMessageDisplayed() {
+        try {
+            categoryNameValidationMessage.waitUntilVisible();
+            boolean isVisible = categoryNameValidationMessage.isVisible();
+            System.out.println("Validation message visibility: " + isVisible);
+            if (isVisible) {
+                System.out.println("Validation message text: " + categoryNameValidationMessage.getText());
+            }
+            return isVisible;
+        } catch (Exception e) {
+            System.out.println("Validation message not found: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public String getValidationMessageText() {
+        try {
+            return categoryNameValidationMessage.getText();
+        } catch (Exception e) {
+            System.out.println("Error getting validation message text: " + e.getMessage());
+            return "";
+        }
+    }
+
+    public boolean isValidationMessageContainsRequiredText() {
+        try {
+            String messageText = getValidationMessageText();
+            boolean containsRequired = messageText.toLowerCase().contains("required");
+            System.out.println("Validation message contains 'required': " + containsRequired);
+            return containsRequired;
+        } catch (Exception e) {
+            System.out.println("Error checking validation message: " + e.getMessage());
+            return false;
+        }
     }
 }
