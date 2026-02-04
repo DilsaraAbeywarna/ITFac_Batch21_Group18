@@ -6,3 +6,15 @@ Feature: Plant Edit Navigation
     When Admin user navigates to the Plant List page
     And Admin user clicks the Edit button of a plant
     Then Admin user should be navigated to the Edit Plant page
+
+  @admin
+  Scenario: UI_PLANTEDIT_NAMEVALIDATION_02 - Verify edit page Plant Name field validation
+    Given Admin user is logged in and on the dashboard
+    When Admin user navigates to the Plant List page
+    And Admin user clicks the Edit button of a plant
+    And Admin user clears the plant name field
+    And Admin user selects a valid sub-category
+    And Admin user enters "50" in the price field
+    And Admin user enters "100" in the quantity field
+    And Admin user clicks the Save button
+    Then Admin user should see the plant name validation error message

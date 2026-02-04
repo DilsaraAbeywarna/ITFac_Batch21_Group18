@@ -10,6 +10,7 @@ import starter.pages.LoginPage;
 import org.openqa.selenium.WebDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class PlantsEditSteps {
 
@@ -46,6 +47,51 @@ public class PlantsEditSteps {
         assertTrue(
             plantsEditDelete.isOnEditPlantPage(),
             "Admin user was not navigated to the Edit Plant page"
+        );
+    }
+
+    // UI_PLANTEDIT_NAMEVALIDATION_02
+
+    @When("Admin user clears the plant name field")
+    public void adminUserClearsThePlantNameField() {
+        plantsEditDelete.clearPlantNameField();
+    }
+
+    @When("Admin user selects a valid sub-category")
+    public void adminUserSelectsAValidSubCategory() {
+        plantsEditDelete.selectSubCategory("1");
+    }
+
+    @When("Admin user enters {string} in the price field")
+    public void adminUserEntersPriceInThePriceField(String price) {
+        plantsEditDelete.enterPrice(price);
+    }
+
+    @When("Admin user enters {string} in the quantity field")
+    public void adminUserEntersQuantityInTheQuantityField(String quantity) {
+        plantsEditDelete.enterQuantity(quantity);
+    }
+
+    @When("Admin user clicks the Save button")
+    public void adminUserClicksTheSaveButton() {
+        plantsEditDelete.clickSaveButton();
+    }
+
+    @Then("Admin user should see the plant name validation error message")
+    public void adminUserShouldSeeThePlantNameValidationErrorMessage() {
+        assertAll(
+            () -> assertTrue(
+                plantsEditDelete.isPlantNameErrorMessageDisplayed(),
+                "Plant name error message is not displayed"
+            ),
+            () -> assertTrue(
+                plantsEditDelete.getPlantNameErrorMessage().contains("Plant name must be between 3 and 25 characters"),
+                "Error message does not contain expected text about character range"
+            ),
+            () -> assertTrue(
+                plantsEditDelete.getPlantNameErrorMessage().contains("Plant name is required"),
+                "Error message does not contain expected text about required field"
+            )
         );
     }
 }
