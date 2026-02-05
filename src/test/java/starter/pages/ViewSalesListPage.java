@@ -4,8 +4,13 @@ import net.serenitybdd.annotations.DefaultUrl;
 import net.serenitybdd.core.annotations.findby.FindBy;
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.core.pages.WebElementFacade;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @DefaultUrl("/ui/sales")
@@ -242,6 +247,66 @@ public class ViewSalesListPage extends PageObject {
             
         } catch (Exception e) {
             System.out.println("ERROR checking pagination: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /* ================= Check Sales Sorted By Date Descending ================= */
+
+    public boolean areSalesSortedByDateDescending() {
+        try {
+            // Get all "Sold At" date cells from the table
+            // The 4th column contains the date/time
+            List<WebElement> dateColumns = getDriver().findElements(By.cssSelector("table.table tbody tr td:nth-child(4)"));
+            
+            if (dateColumns.isEmpty()) {
+                System.out.println("No date columns found in sales table");
+                return false;
+            }
+            
+            System.out.println("Found " + dateColumns.size() + " sales records with dates");
+            
+            // Extract and parse dates
+            List<LocalDateTime> dates = new ArrayList<>();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            
+            for (WebElement dateColumn : dateColumns) {
+                String dateText = dateColumn.getText().trim();
+                System.out.println("Date: " + dateText);
+                
+                try {
+                    LocalDateTime date = LocalDateTime.parse(dateText, formatter);
+                    dates.add(date);
+                } catch (Exception e) {
+                    System.out.println("WARNING: Could not parse date: " + dateText);
+                    // Continue with other dates
+                }
+            }
+            
+            if (dates.size() < 2) {
+                System.out.println("Need at least 2 dates to verify sorting");
+                return dates.size() == 1; // Single record is technically sorted
+            }
+            
+            // Check if dates are in descending order (newest first)
+            for (int i = 0; i < dates.size() - 1; i++) {
+                LocalDateTime current = dates.get(i);
+                LocalDateTime next = dates.get(i + 1);
+                
+                if (current.isBefore(next)) {
+                    System.out.println("ERROR: Dates not in descending order:");
+                    System.out.println("  Position " + i + ": " + current);
+                    System.out.println("  Position " + (i+1) + ": " + next);
+                    return false;
+                }
+            }
+            
+            System.out.println("Sales are correctly sorted by date in descending order (newest first)");
+            return true;
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking date sorting: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
