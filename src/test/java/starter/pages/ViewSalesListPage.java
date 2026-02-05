@@ -4,6 +4,7 @@ import net.serenitybdd.annotations.DefaultUrl;
 import net.serenitybdd.core.annotations.findby.FindBy;
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.core.pages.WebElementFacade;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -443,6 +444,151 @@ public class ViewSalesListPage extends PageObject {
         } catch (Exception e) {
             System.out.println("ERROR checking quantity sorting: " + e.getMessage());
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    /* ================= Get Sales Count ================= */
+
+    public int getSalesCount() {
+        try {
+            List<WebElement> salesRows = getDriver().findElements(By.cssSelector("table.table tbody tr"));
+            int count = salesRows.size();
+            System.out.println("Sales count: " + count);
+            return count;
+        } catch (Exception e) {
+            System.out.println("ERROR getting sales count: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    /* ================= Get First Sale Plant Name ================= */
+
+    public String getFirstSalePlantName() {
+        try {
+            // Get the first plant name from the table (1st column of first row)
+            WebElement firstPlantCell = getDriver().findElement(By.cssSelector("table.table tbody tr:first-child td:nth-child(1)"));
+            String plantName = firstPlantCell.getText().trim();
+            System.out.println("First sale plant name: " + plantName);
+            return plantName;
+        } catch (Exception e) {
+            System.out.println("ERROR getting first sale plant name: " + e.getMessage());
+            return "";
+        }
+    }
+
+    /* ================= Click Delete Button for First Sale ================= */
+
+    public void clickDeleteButtonForFirstSale() {
+        try {
+            // Find the delete button in the first row
+            // <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+            WebElement deleteButton = getDriver().findElement(By.cssSelector("table.table tbody tr:first-child form button.btn-outline-danger"));
+            
+            System.out.println("Clicking delete button for first sale");
+            deleteButton.click();
+            
+            // Small wait for alert to appear
+            waitABit(500);
+            
+            System.out.println("Clicked delete button");
+            
+        } catch (Exception e) {
+            System.out.println("ERROR clicking delete button: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /* ================= Check if Confirmation Dialog is Displayed ================= */
+
+    public boolean isConfirmationDialogDisplayed() {
+        try {
+            Alert alert = getDriver().switchTo().alert();
+            String alertText = alert.getText();
+            System.out.println("Alert text: " + alertText);
+            return alertText.contains("Are you sure");
+        } catch (Exception e) {
+            System.out.println("No alert present: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /* ================= Dismiss Confirmation Dialog (Cancel) ================= */
+
+    public void dismissConfirmationDialog() {
+        try {
+            Alert alert = getDriver().switchTo().alert();
+            System.out.println("Dismissing alert (Cancel)");
+            alert.dismiss();
+            waitABit(1000);
+            System.out.println("Alert dismissed");
+        } catch (Exception e) {
+            System.out.println("ERROR dismissing alert: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /* ================= Accept Confirmation Dialog (OK) ================= */
+
+    public void acceptConfirmationDialog() {
+        try {
+            Alert alert = getDriver().switchTo().alert();
+            System.out.println("Accepting alert (OK)");
+            alert.accept();
+            
+            // Wait for page to reload after deletion
+            waitABit(3000);
+            
+            // Verify we're still on the sales page (or redirected to it)
+            String currentUrl = getDriver().getCurrentUrl();
+            System.out.println("After deletion - Current URL: " + currentUrl);
+            System.out.println("Alert accepted and page reloaded");
+        } catch (Exception e) {
+            System.out.println("ERROR accepting alert: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /* ================= Check if Sale Exists by Plant Name ================= */
+
+    public boolean doesSaleExistByPlantName(String plantName) {
+        try {
+            List<WebElement> plantCells = getDriver().findElements(By.cssSelector("table.table tbody tr td:nth-child(1)"));
+            
+            for (WebElement cell : plantCells) {
+                String cellText = cell.getText().trim();
+                if (cellText.equals(plantName)) {
+                    System.out.println("Found sale with plant: " + plantName);
+                    return true;
+                }
+            }
+            
+            System.out.println("Sale with plant '" + plantName + "' not found");
+            return false;
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking if sale exists: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /* ================= Check if Delete Success Message is Displayed ================= */
+
+    public boolean isDeleteSuccessMessageDisplayed() {
+        try {
+            // Look for success message: <div class="alert alert-success">
+            WebElement successAlert = getDriver().findElement(By.cssSelector("div.alert.alert-success"));
+            
+            if (successAlert.isDisplayed()) {
+                String messageText = successAlert.getText();
+                System.out.println("Success message: " + messageText);
+                return messageText.toLowerCase().contains("delete") || messageText.toLowerCase().contains("success");
+            }
+            
+            return false;
+            
+        } catch (Exception e) {
+            System.out.println("No success message found: " + e.getMessage());
             return false;
         }
     }
