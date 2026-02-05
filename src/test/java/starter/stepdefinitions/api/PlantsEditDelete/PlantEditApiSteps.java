@@ -1,19 +1,19 @@
-package starter.stepdefinitions.api;
+package starter.stepdefinitions.api.PlantsEditDelete;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
-import starter.api.PlantApiClient;
+import starter.api.PlantsEditDeleteApi;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PlantApiStepDefinitions {
+public class PlantEditApiSteps {
 
-    private PlantApiClient plantApiClient = new PlantApiClient();
+    private PlantsEditDeleteApi plantApiClient = new PlantsEditDeleteApi();
     private Response response;
     private String bearerToken;
 
