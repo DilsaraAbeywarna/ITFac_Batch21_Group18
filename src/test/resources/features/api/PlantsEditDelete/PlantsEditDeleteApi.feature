@@ -110,7 +110,16 @@ Feature: Plant Edit Delete API
   @API_PLANT_DELETE_04
   Scenario: API_PLANT_DELETE_04 - Delete existing plant
     Given Admin is authenticated with valid Bearer Token
-    When Admin sends a DELETE request to "/api/plants/24"
+    When Admin creates a plant under category 4 with request body:
+      """
+      {
+        "name": "Test Plant to Delete",
+        "price": 100,
+        "quantity": 10
+      }
+      """
+    Then the response status code should be 201
+    When Admin sends a DELETE request to the created plant
     Then the response status code should be 204
 
   @API_PLANT_DELETE_05

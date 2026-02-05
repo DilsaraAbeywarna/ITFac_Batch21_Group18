@@ -62,4 +62,11 @@ public class PlantsEditDeleteApi {
                 .when()
                 .delete(endpoint);
     }
+
+    public Response createPlant(Integer categoryId, String requestBody) {
+        return getRequestSpec()
+                .body(requestBody)
+                .when()
+                .post("/api/plants/category/" + categoryId);
+    }
 }

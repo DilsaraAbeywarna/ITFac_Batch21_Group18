@@ -16,6 +16,7 @@ public class PlantEditDeleteApiSteps {
     private PlantsEditDeleteApi plantApiClient = new PlantsEditDeleteApi();
     private Response response;
     private String bearerToken;
+    private Integer createdPlantId;
 
     @Given("the Plant API base URL is {string}")
     public void thePlantApiBaseUrlIs(String baseUrl) {
@@ -129,5 +130,23 @@ public class PlantEditDeleteApiSteps {
                         .isEqualTo(expectedValue);
             }
         }
+    }
+
+    @When("Admin creates a plant under category {int} with request body:")
+    public void adminCreatesAPlantUnderCategoryWithRequestBody(Integer categoryId, String requestBody) {
+        response = plantApiClient.createPlant(categoryId, requestBody);
+        
+        // Store the created plant ID if creation was successful
+        if (response.getStatusCode() == 201) {
+            createdPlantId = response.jsonPath().getInt("id");
+        }
+    }
+
+    @When("Admin sends a DELETE request to the created plant")
+    public void adminSendsADeleteRequestToTheCreatedPlant() {
+        if (createdPlantId == null) {
+            throw new IllegalStateException("No plant has been created yet");
+        }
+        response = plantApiClient.deletePlant("/api/plants/" + createdPlantId);
     }
 }
