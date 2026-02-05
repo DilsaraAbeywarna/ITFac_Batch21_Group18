@@ -110,7 +110,7 @@ Feature: Plant Edit API
   @API_PLANT_DELETE_04
   Scenario: API_PLANT_DELETE_04 - Delete existing plant
     Given Admin is authenticated with valid Bearer Token
-    When Admin sends a DELETE request to "/api/plants/20"
+    When Admin sends a DELETE request to "/api/plants/22"
     Then the response status code should be 204
 
   @API_PLANT_DELETE_05
@@ -118,3 +118,15 @@ Feature: Plant Edit API
     Given Admin is authenticated with valid Bearer Token
     When Admin sends a DELETE request to "/api/plants/99999"
     Then the response status code should be 204
+
+  @API_PLANT_DELETE_07
+  Scenario: API_PLANT_DELETE_07 - Delete Plant using valid ID
+    Given Test User is authenticated with valid Bearer Token
+    When Test User sends a DELETE request to "/api/plants/15"
+    Then the response status code should be 403
+
+  @API_PLANT_DELETE_09
+  Scenario: API_PLANT_DELETE_09 - Delete Plant using invalid ID
+    Given Test User is authenticated with valid Bearer Token
+    When Test User sends a DELETE request to "/api/plants/99999"
+    Then the response status code should be 403
