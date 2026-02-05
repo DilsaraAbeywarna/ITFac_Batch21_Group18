@@ -29,6 +29,12 @@ public class ViewSalesListPage extends PageObject {
     private List<WebElementFacade> salesRows;
 
 
+    /* ===== Sell Plant Button ===== */
+
+    @FindBy(css = "a.btn.btn-primary")
+    private WebElementFacade sellPlantButton;
+
+
 
     /* ================= Navigate to Sales Page ================= */
 
@@ -57,6 +63,16 @@ public class ViewSalesListPage extends PageObject {
                 .click();
 
         waitABit(1500);
+    }
+
+
+    /* ================= Click Sell Plant Button ================= */
+
+    public void navigateToSellPlantPage() {
+        System.out.println("Navigating to Sell Plant page");
+        getDriver().get("http://localhost:8080/ui/sales/new");
+        waitABit(1500);
+        System.out.println("Navigated to: " + getDriver().getCurrentUrl());
     }
 
 
