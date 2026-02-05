@@ -10,11 +10,11 @@ Feature: Plant Edit API
   @API_PLANT_EDIT_01
   Scenario: API_PLANT_EDIT_01 - Update plant with valid data
     Given Admin is authenticated with valid Bearer Token
-    And a plant with id 9 exists in the system
-    When Admin sends a PUT request to "/api/plants/9" with request body:
+    And a plant with id 13 exists in the system
+    When Admin sends a PUT request to "/api/plants/13" with request body:
       """
       {
-        "id": 9,
+        "id": 13,
         "name": "Anthurium",
         "price": 150,
         "quantity": 25,
@@ -30,11 +30,11 @@ Feature: Plant Edit API
   @API_PLANT_EDIT_02
   Scenario: API_PLANT_EDIT_02 - Update plant with empty name
     Given Admin is authenticated with valid Bearer Token
-    And a plant with id 9 exists in the system
-    When Admin sends a PUT request to "/api/plants/9" with request body:
+    And a plant with id 13 exists in the system
+    When Admin sends a PUT request to "/api/plants/13" with request body:
       """
       {
-        "id": 9,
+        "id": 13,
         "name": "",
         "price": 150,
         "quantity": 25,
@@ -46,11 +46,11 @@ Feature: Plant Edit API
   @API_PLANT_EDIT_03
   Scenario: API_PLANT_EDIT_03 - Update plant with negative quantity
     Given Admin is authenticated with valid Bearer Token
-    And a plant with id 9 exists in the system
-    When Admin sends a PUT request to "/api/plants/9" with request body:
+    And a plant with id 13 exists in the system
+    When Admin sends a PUT request to "/api/plants/13" with request body:
       """
       {
-        "id": 9,
+        "id": 13,
         "name": "Test Plant",
         "price": 150,
         "quantity": -10,
@@ -62,11 +62,11 @@ Feature: Plant Edit API
   @API_PLANT_EDIT_06
   Scenario: API_PLANT_EDIT_06 - Update plant using valid data as testuser
     Given Test User is authenticated with valid Bearer Token
-    And a plant with id 9 exists in the system
-    When Test User sends a PUT request to "/api/plants/9" with request body:
+    And a plant with id 13 exists in the system
+    When Test User sends a PUT request to "/api/plants/13" with request body:
       """
       {
-        "id": 9,
+        "id": 13,
         "name": "Updated Plant",
         "price": 200,
         "quantity": 50,
@@ -78,11 +78,11 @@ Feature: Plant Edit API
   @API_PLANT_EDIT_08
   Scenario: API_PLANT_EDIT_08 - Update plant with empty name as testuser
     Given Test User is authenticated with valid Bearer Token
-    And a plant with id 9 exists in the system
-    When Test User sends a PUT request to "/api/plants/9" with request body:
+    And a plant with id 13 exists in the system
+    When Test User sends a PUT request to "/api/plants/13" with request body:
       """
       {
-        "id": 9,
+        "id": 13,
         "name": "",
         "price": 150,
         "quantity": 25,
@@ -94,11 +94,11 @@ Feature: Plant Edit API
   @API_PLANT_EDIT_10
   Scenario: API_PLANT_EDIT_10 - Update plant with negative price as testuser
     Given Test User is authenticated with valid Bearer Token
-    And a plant with id 9 exists in the system
-    When Test User sends a PUT request to "/api/plants/9" with request body:
+    And a plant with id 13 exists in the system
+    When Test User sends a PUT request to "/api/plants/13" with request body:
       """
       {
-        "id": 9,
+        "id": 13,
         "name": "Test Plant",
         "price": -100,
         "quantity": 25,
