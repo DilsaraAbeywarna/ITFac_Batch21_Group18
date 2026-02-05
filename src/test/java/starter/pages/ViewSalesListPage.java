@@ -310,4 +310,140 @@ public class ViewSalesListPage extends PageObject {
             return false;
         }
     }
+
+    /* ================= Click Quantity Column Header ================= */
+
+    public void clickQuantityColumnHeader() {
+        try {
+            // Find and click the Quantity column header link
+            // <a class="text-white text-decoration-none" href="/ui/sales?page=0&sortField=quantity&sortDir=asc">Quantity</a>
+            WebElement quantityHeader = getDriver().findElement(By.xpath("//th/a[contains(text(), 'Quantity')]"));
+            
+            System.out.println("Clicking Quantity column header");
+            quantityHeader.click();
+            
+            // Wait for page to reload with new sorting
+            waitABit(2000);
+            
+            System.out.println("Clicked Quantity column header successfully");
+            
+        } catch (Exception e) {
+            System.out.println("ERROR clicking Quantity header: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /* ================= Check Sales Sorted By Quantity Ascending ================= */
+
+    public boolean areSalesSortedByQuantityAscending() {
+        try {
+            // Get all quantity cells from the table (2nd column)
+            List<WebElement> quantityColumns = getDriver().findElements(By.cssSelector("table.table tbody tr td:nth-child(2)"));
+            
+            if (quantityColumns.isEmpty()) {
+                System.out.println("No quantity columns found in sales table");
+                return false;
+            }
+            
+            System.out.println("Found " + quantityColumns.size() + " sales records with quantities");
+            
+            // Extract quantities
+            List<Integer> quantities = new ArrayList<>();
+            
+            for (WebElement quantityColumn : quantityColumns) {
+                String quantityText = quantityColumn.getText().trim();
+                System.out.println("Quantity: " + quantityText);
+                
+                try {
+                    int quantity = Integer.parseInt(quantityText);
+                    quantities.add(quantity);
+                } catch (NumberFormatException e) {
+                    System.out.println("WARNING: Could not parse quantity: " + quantityText);
+                }
+            }
+            
+            if (quantities.size() < 2) {
+                System.out.println("Need at least 2 quantities to verify sorting");
+                return quantities.size() == 1;
+            }
+            
+            // Check if quantities are in ascending order (smallest first)
+            for (int i = 0; i < quantities.size() - 1; i++) {
+                int current = quantities.get(i);
+                int next = quantities.get(i + 1);
+                
+                if (current > next) {
+                    System.out.println("ERROR: Quantities not in ascending order:");
+                    System.out.println("  Position " + i + ": " + current);
+                    System.out.println("  Position " + (i+1) + ": " + next);
+                    return false;
+                }
+            }
+            
+            System.out.println("Sales are correctly sorted by quantity in ascending order");
+            return true;
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking quantity sorting: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /* ================= Check Sales Sorted By Quantity Descending ================= */
+
+    public boolean areSalesSortedByQuantityDescending() {
+        try {
+            // Get all quantity cells from the table (2nd column)
+            List<WebElement> quantityColumns = getDriver().findElements(By.cssSelector("table.table tbody tr td:nth-child(2)"));
+            
+            if (quantityColumns.isEmpty()) {
+                System.out.println("No quantity columns found in sales table");
+                return false;
+            }
+            
+            System.out.println("Found " + quantityColumns.size() + " sales records with quantities");
+            
+            // Extract quantities
+            List<Integer> quantities = new ArrayList<>();
+            
+            for (WebElement quantityColumn : quantityColumns) {
+                String quantityText = quantityColumn.getText().trim();
+                System.out.println("Quantity: " + quantityText);
+                
+                try {
+                    int quantity = Integer.parseInt(quantityText);
+                    quantities.add(quantity);
+                } catch (NumberFormatException e) {
+                    System.out.println("WARNING: Could not parse quantity: " + quantityText);
+                }
+            }
+            
+            if (quantities.size() < 2) {
+                System.out.println("Need at least 2 quantities to verify sorting");
+                return quantities.size() == 1;
+            }
+            
+            // Check if quantities are in descending order (largest first)
+            for (int i = 0; i < quantities.size() - 1; i++) {
+                int current = quantities.get(i);
+                int next = quantities.get(i + 1);
+                
+                if (current < next) {
+                    System.out.println("ERROR: Quantities not in descending order:");
+                    System.out.println("  Position " + i + ": " + current);
+                    System.out.println("  Position " + (i+1) + ": " + next);
+                    return false;
+                }
+            }
+            
+            System.out.println("Sales are correctly sorted by quantity in descending order");
+            return true;
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking quantity sorting: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
