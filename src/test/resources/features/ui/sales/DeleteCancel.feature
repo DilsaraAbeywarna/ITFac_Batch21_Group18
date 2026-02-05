@@ -1,11 +1,11 @@
-Feature: Delete Confirmation
+Feature: Delete Cancel
 
   @admin
-  Scenario: TC_UI_SALES_05 - Verify Delete action shows confirmation prompt before deletion
+  Scenario: TC_UI_SALES_05 - Verify Delete confirmation dialog can be canceled
     When Admin clicks Sales in side navigation
     Then Sales page should load successfully
     And Sales list should be visible
-    When Admin clicks Delete button for first sale
-    Then Confirmation dialog should be displayed
-    When Admin clicks Cancel on confirmation dialog
-    Then Sale item should remain in the list
+    When Admin clicks Delete button to test cancel
+    Then Delete confirmation dialog is displayed
+    When Admin cancels the delete confirmation
+    Then Sale item remains in the list

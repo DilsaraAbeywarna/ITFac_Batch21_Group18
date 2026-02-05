@@ -15,10 +15,10 @@ public class DeleteCancel {
     private String firstSalePlantName;
     private int initialSalesCount;
 
-    @When("Admin clicks Delete button for first sale")
-    public void adminClicksDeleteButtonForFirstSale() {
-        System.out.println("Clicking Delete button for first sale");
-        // Count sales before deletion
+    @When("Admin clicks Delete button to test cancel")
+    public void adminClicksDeleteButtonToTestCancel() {
+        System.out.println("Clicking Delete button for first sale (to test cancel)");
+        // Count sales before deletion attempt
         initialSalesCount = viewSalesListPage.getSalesCount();
         System.out.println("Initial sales count: " + initialSalesCount);
         
@@ -28,58 +28,29 @@ public class DeleteCancel {
         viewSalesListPage.clickDeleteButtonForFirstSale();
     }
 
-    @Then("Confirmation dialog should be displayed")
-    public void verifyConfirmationDialogDisplayed() {
-        System.out.println("Verifying confirmation dialog is displayed");
+    @Then("Delete confirmation dialog is displayed")
+    public void verifyDeleteConfirmationDialogDisplayed() {
+        System.out.println("Verifying delete confirmation dialog is displayed");
         boolean isDialogDisplayed = viewSalesListPage.isConfirmationDialogDisplayed();
-        System.out.println("Confirmation dialog displayed: " + isDialogDisplayed);
+        System.out.println("Delete confirmation dialog displayed: " + isDialogDisplayed);
         assertThat(isDialogDisplayed)
-            .as("Confirmation dialog should be displayed")
+            .as("Delete confirmation dialog should be displayed")
             .isTrue();
     }
 
-    @When("Admin clicks Cancel on confirmation dialog")
-    public void adminClicksCancelOnDialog() {
-        System.out.println("Clicking Cancel on confirmation dialog");
+    @When("Admin cancels the delete confirmation")
+    public void adminCancelsTheDeleteConfirmation() {
+        System.out.println("Clicking Cancel on delete confirmation dialog");
         viewSalesListPage.dismissConfirmationDialog();
     }
 
-    @Then("Sale item should remain in the list")
-    public void verifySaleItemRemainsInList() {
-        System.out.println("Verifying sale item remains in the list");
+    @Then("Sale item remains in the list")
+    public void verifySaleItemRemainsInTheList() {
+        System.out.println("Verifying sale item remains in the list after cancel");
         boolean itemExists = viewSalesListPage.doesSaleExistByPlantName(firstSalePlantName);
         System.out.println("Sale with plant '" + firstSalePlantName + "' exists: " + itemExists);
         assertThat(itemExists)
             .as("Sale item should remain in the list after canceling delete")
-            .isTrue();
-    }
-
-    @When("Admin clicks OK on confirmation dialog")
-    public void adminClicksOKOnDialog() {
-        System.out.println("Clicking OK on confirmation dialog");
-        viewSalesListPage.acceptConfirmationDialog();
-    }
-
-    @Then("Sale item should be deleted from the list")
-    public void verifySaleItemDeletedFromList() {
-        System.out.println("Verifying sale item is deleted from the list");
-        int currentSalesCount = viewSalesListPage.getSalesCount();
-        System.out.println("Current sales count: " + currentSalesCount);
-        System.out.println("Initial sales count: " + initialSalesCount);
-        
-        // Verify count decreased by 1
-        assertThat(currentSalesCount)
-            .as("Sales count should decrease by 1 after deletion")
-            .isEqualTo(initialSalesCount - 1);
-    }
-
-    @Then("Success message should be displayed")
-    public void verifySuccessMessageDisplayed() {
-        System.out.println("Verifying success message is displayed");
-        boolean isSuccessMessageDisplayed = viewSalesListPage.isDeleteSuccessMessageDisplayed();
-        System.out.println("Success message displayed: " + isSuccessMessageDisplayed);
-        assertThat(isSuccessMessageDisplayed)
-            .as("Success message should be displayed after deletion")
             .isTrue();
     }
 }
