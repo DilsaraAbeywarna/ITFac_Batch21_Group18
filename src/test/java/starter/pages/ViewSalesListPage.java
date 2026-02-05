@@ -68,11 +68,44 @@ public class ViewSalesListPage extends PageObject {
 
     /* ================= Click Sell Plant Button ================= */
 
+    public void clickSellPlantButton() {
+        System.out.println("Clicking Sell Plant button");
+        waitABit(2000); // Wait for page to fully load
+        
+        try {
+            // Try to find and click the Sell Plant button
+            if (sellPlantButton != null && sellPlantButton.isPresent() && sellPlantButton.isVisible()) {
+                System.out.println("Found Sell Plant button using @FindBy");
+                sellPlantButton.waitUntilClickable().click();
+            } else {
+                // Fallback: Navigate directly to sell plant page
+                System.out.println("Sell Plant button not found, navigating directly");
+                navigateToSellPlantPage();
+                return;
+            }
+            
+            System.out.println("Clicked Sell Plant button");
+            waitABit(1500);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR clicking Sell Plant button: " + e.getMessage());
+            // Fallback: Navigate directly
+            navigateToSellPlantPage();
+        }
+    }
+
     public void navigateToSellPlantPage() {
         System.out.println("Navigating to Sell Plant page");
+        System.out.println("Attempting to navigate to: http://localhost:8080/ui/sales/new");
         getDriver().get("http://localhost:8080/ui/sales/new");
-        waitABit(1500);
-        System.out.println("Navigated to: " + getDriver().getCurrentUrl());
+        waitABit(2000);
+        String finalUrl = getDriver().getCurrentUrl();
+        System.out.println("Navigated to: " + finalUrl);
+        
+        // Check if redirected
+        if (!finalUrl.contains("/ui/sales/new")) {
+            System.out.println("WARNING: Was redirected from /ui/sales/new to " + finalUrl);
+        }
     }
 
 

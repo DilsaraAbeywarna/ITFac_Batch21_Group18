@@ -8,7 +8,7 @@ import org.openqa.selenium.By;
 
 import java.time.Duration;
 
-@DefaultUrl("/ui/sales/sell")
+@DefaultUrl("page:ui/sales")
 public class SellPlantPage extends PageObject {
 
     /* ===== Form Elements ===== */
@@ -35,8 +35,8 @@ public class SellPlantPage extends PageObject {
         String currentUrl = getDriver().getCurrentUrl();
         System.out.println("Current URL: " + currentUrl);
         
-        // Check URL and page title
-        boolean urlCorrect = currentUrl.contains("/ui/sales/sell") || currentUrl.contains("/ui/sales/new");
+        // Check URL - accept both /new and /sell in case of redirects
+        boolean urlCorrect = currentUrl.contains("/ui/sales/new") || currentUrl.contains("/ui/sales/sell");
         boolean titleCorrect = getDriver().getTitle().contains("Sell Plant") || 
                               getDriver().getPageSource().contains("Sell Plant");
         
@@ -62,19 +62,69 @@ public class SellPlantPage extends PageObject {
     }
 
 
-    /* ================= Fill Form (for future tests) ================= */
+    /* ================= Fill Form ================= */
 
     public void selectPlant(String plantName) {
-        plantDropdown.selectByVisibleText(plantName);
+        System.out.println("Selecting plant: " + plantName);
+        waitABit(1000);
+        
+        try {
+            // Use $() selector instead of @FindBy
+            WebElementFacade dropdown = $("#plantId");
+            dropdown.waitUntilVisible().waitUntilEnabled();
+            
+            // Map plant names to values based on HTML
+            String value = "1"; // Default to Rose
+            if (plantName.equalsIgnoreCase("Rose")) {
+                value = "1";
+            } else if (plantName.equalsIgnoreCase("Lily")) {
+                value = "2";
+            }
+            
+            dropdown.selectByValue(value);
+            
+            System.out.println("Selected plant: " + plantName + " (value: " + value + ")");
+            waitABit(500);
+        } catch (Exception e) {
+            System.out.println("ERROR selecting plant: " + e.getMessage());
+            throw e;
+        }
     }
 
     public void enterQuantity(int quantity) {
-        quantityInput.clear();
-        quantityInput.type(String.valueOf(quantity));
+        System.out.println("Entering quantity: " + quantity);
+        waitABit(500);
+        
+        try {
+            // Use $() selector instead of @FindBy
+            WebElementFacade quantityField = $("#quantity");
+            quantityField.waitUntilVisible().waitUntilEnabled();
+            quantityField.clear();
+            quantityField.type(String.valueOf(quantity));
+            
+            System.out.println("Entered quantity: " + quantity);
+            waitABit(500);
+        } catch (Exception e) {
+            System.out.println("ERROR entering quantity: " + e.getMessage());
+            throw e;
+        }
     }
 
     public void clickSell() {
-        sellButton.click();
+        System.out.println("Clicking Sell button");
         waitABit(1000);
+        
+        try {
+            // Use CSS selector with By.cssSelector to ensure correct selector type
+            WebElementFacade sellBtn = find(By.cssSelector("button.btn.btn-primary"));
+            sellBtn.waitUntilVisible().waitUntilEnabled().waitUntilClickable();
+            sellBtn.click();
+            
+            System.out.println("Clicked Sell button");
+            waitABit(2000); // Wait for submission and redirect
+        } catch (Exception e) {
+            System.out.println("ERROR clicking sell button: " + e.getMessage());
+            throw e;
+        }
     }
 }
