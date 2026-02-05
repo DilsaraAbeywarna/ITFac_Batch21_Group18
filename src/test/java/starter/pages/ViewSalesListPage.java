@@ -218,4 +218,31 @@ public class ViewSalesListPage extends PageObject {
             return "";
         }
     }
+
+    /* ================= Check Pagination Controls ================= */
+
+    public boolean isPaginationVisible() {
+        try {
+            // Look for the pagination nav element
+            // <nav><ul class="pagination">...</ul></nav>
+            WebElementFacade paginationNav = $("nav ul.pagination");
+            
+            if (paginationNav.isVisible()) {
+                System.out.println("Pagination controls found and visible");
+                
+                // Count pagination items for additional info
+                List<WebElementFacade> pageItems = findAll("ul.pagination li.page-item");
+                System.out.println("Number of pagination items: " + pageItems.size());
+                
+                return true;
+            }
+            
+            System.out.println("Pagination controls not visible");
+            return false;
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking pagination: " + e.getMessage());
+            return false;
+        }
+    }
 }
