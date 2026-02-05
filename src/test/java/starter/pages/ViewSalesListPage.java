@@ -195,4 +195,27 @@ public class ViewSalesListPage extends PageObject {
             return false;
         }
     }
+
+    /* ================= Get No Sales Message ================= */
+
+    public String getNoSalesMessage() {
+        try {
+            // Look for the empty state message in the table body
+            // <td colspan="5" class="text-center text-muted">No sales found</td>
+            WebElementFacade emptyMessage = $("tbody tr td.text-center.text-muted");
+            
+            if (emptyMessage.isPresent()) {
+                String message = emptyMessage.getText().trim();
+                System.out.println("Empty sales message found: " + message);
+                return message;
+            }
+            
+            System.out.println("No empty sales message found");
+            return "";
+            
+        } catch (Exception e) {
+            System.out.println("ERROR getting no sales message: " + e.getMessage());
+            return "";
+        }
+    }
 }
