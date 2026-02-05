@@ -16,3 +16,4 @@ Feature: Edit Category access control
     Then Category List page is displayed
     And Edit action is not visible for all categories
     And User cannot initiate category edit via UI
+

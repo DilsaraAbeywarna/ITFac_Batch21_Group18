@@ -36,7 +36,7 @@ public class CategoryPage extends PageObject {
     public WebElementFacade successMessage;
 
     // Edit button/icon for any category in the list
-    @FindBy(css = "a[href*='/ui/categories/edit/'], button[class*='edit'], .edit-action")
+    @FindBy(css = "a[href*='/ui/categories/edit'], .btn-edit")
     public List<WebElementFacade> editActionButtons;
 
     public void openPage() {
@@ -251,49 +251,25 @@ public class CategoryPage extends PageObject {
     }
 
     public String getEditButtonState() {
-        try {
-            waitABit(1000);
-
-            if (editActionButtons.isEmpty()) {
-                System.out.println("Edit button state: HIDDEN (no buttons found)");
-                return "hidden";
-            }
-
-            boolean anyVisible = false;
-            boolean anyEnabled = false;
-
-            for (WebElementFacade button : editActionButtons) {
-                if (button.isVisible()) {
-                    anyVisible = true;
-
-                    // Check if disabled
-                    String disabledAttr = button.getAttribute("disabled");
-                    String classAttr = button.getAttribute("class");
-                    boolean isDisabled = (disabledAttr != null && !disabledAttr.isEmpty()) ||
-                            (classAttr != null && classAttr.contains("disabled"));
-
-                    if (!isDisabled && button.isEnabled()) {
-                        anyEnabled = true;
-                        break;
-                    }
-                }
-            }
-
-            String state;
-            if (!anyVisible) {
-                state = "hidden";
-            } else if (anyVisible && !anyEnabled) {
-                state = "disabled";
-            } else {
-                state = "enabled";
-            }
-
-            System.out.println("Edit button state: " + state.toUpperCase());
-            return state;
-
-        } catch (Exception e) {
-            System.out.println("Error getting edit button state: " + e.getMessage());
+        if (editActionButtons.isEmpty()) {
+            System.out.println("No Edit buttons found → HIDDEN");
             return "hidden";
         }
+
+        for (WebElementFacade button : editActionButtons) {
+            if (button.isCurrentlyVisible()) {
+                if (button.isEnabled()) {
+                    System.out.println("Edit button is ENABLED");
+                    return "enabled";
+                } else {
+                    System.out.println("Edit button is DISABLED");
+                    return "disabled";
+                }
+            }
+        }
+
+        System.out.println("Edit buttons found but none visible → HIDDEN");
+        return "hidden";
     }
+
 }
