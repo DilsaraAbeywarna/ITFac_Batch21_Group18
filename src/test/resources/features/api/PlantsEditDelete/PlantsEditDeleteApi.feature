@@ -1,5 +1,5 @@
 @api @plant
-Feature: Plant Edit API
+Feature: Plant Edit Delete API
   As an Admin user
   I want to update plant details via API
   So that I can maintain accurate plant information in the system
@@ -110,7 +110,7 @@ Feature: Plant Edit API
   @API_PLANT_DELETE_04
   Scenario: API_PLANT_DELETE_04 - Delete existing plant
     Given Admin is authenticated with valid Bearer Token
-    When Admin sends a DELETE request to "/api/plants/22"
+    When Admin sends a DELETE request to "/api/plants/24"
     Then the response status code should be 204
 
   @API_PLANT_DELETE_05

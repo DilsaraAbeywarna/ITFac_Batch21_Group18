@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PlantEditApiSteps {
+public class PlantEditDeleteApiSteps {
 
     private PlantsEditDeleteApi plantApiClient = new PlantsEditDeleteApi();
     private Response response;
