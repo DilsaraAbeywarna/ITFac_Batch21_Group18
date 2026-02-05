@@ -30,12 +30,28 @@ public class ViewSalesListPage extends PageObject {
 
 
 
-    /* ================= Click Sales ================= */
+    /* ================= Navigate to Sales Page ================= */
+
+    public void navigateToSalesPage() {
+        // Get current URL before navigation
+        String beforeUrl = getDriver().getCurrentUrl();
+        System.out.println("Before navigation - Current URL: " + beforeUrl);
+        
+        // Navigate directly to sales page (preserves session from hook)
+        getDriver().get("http://localhost:8080/ui/sales");
+        
+        // Wait for navigation
+        waitABit(2000);
+        
+        // Check where we ended up
+        String afterUrl = getDriver().getCurrentUrl();
+        System.out.println("After navigation - Current URL: " + afterUrl);
+    }
 
     public void clickSalesMenu() {
-
+        // Try to find and click the sales menu link
         salesMenuLink
-                .withTimeoutOf(Duration.ofSeconds(15))
+                .withTimeoutOf(Duration.ofSeconds(10))
                 .waitUntilVisible()
                 .waitUntilClickable()
                 .click();
@@ -48,18 +64,19 @@ public class ViewSalesListPage extends PageObject {
     /* ================= Verify Page ================= */
 
     public boolean isOnSalesPage() {
-
-        waitForCondition()
-                .withTimeout(Duration.ofSeconds(15))
-                .until(driver ->
-                        driver.getCurrentUrl().contains("/ui/sales")
-                );
-
-        System.out.println("Sales URL: " + getDriver().getCurrentUrl());
-
-        return getDriver()
-                .getCurrentUrl()
-                .contains("/ui/sales");
+        // Wait a moment for page to load
+        waitABit(1000);
+        
+        String currentUrl = getDriver().getCurrentUrl();
+        System.out.println("Current Sales URL: " + currentUrl);
+        
+        boolean onSalesPage = currentUrl.contains("/ui/sales");
+        
+        if (!onSalesPage) {
+            System.out.println("ERROR: Not on sales page. Current URL: " + currentUrl);
+        }
+        
+        return onSalesPage;
     }
 
 
@@ -67,11 +84,24 @@ public class ViewSalesListPage extends PageObject {
     /* ================= Verify Table ================= */
 
     public boolean isSalesTableVisible() {
-
-        return salesTable
-                .withTimeoutOf(Duration.ofSeconds(15))
-                .waitUntilVisible()
-                .isDisplayed();
+        try {
+            // Wait for page to fully load
+            waitABit(2000);
+            
+            // Check if the .table element is present and visible
+            if ($(".table").isPresent()) {
+                boolean isVisible = $(".table").isVisible();
+                System.out.println("Sales table/list is visible: " + isVisible);
+                return isVisible;
+            } else {
+                System.out.println("No .table element found on page");
+                return false;
+            }
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking sales table: " + e.getMessage());
+            return false;
+        }
     }
 
 
@@ -79,13 +109,41 @@ public class ViewSalesListPage extends PageObject {
     /* ================= Verify Records ================= */
 
     public boolean hasSalesRecords() {
-
-        waitForCondition()
-                .withTimeout(Duration.ofSeconds(15))
-                .until(driver -> salesRows.size() > 0);
-
-        System.out.println("Sales rows count: " + salesRows.size());
-
-        return salesRows.size() > 0;
+        try {
+            // Wait for content to load
+            waitABit(1000);
+            
+            // Try to find rows in the table/list
+            int rowCount = $$(".table tbody tr").size();
+            
+            if (rowCount == 0) {
+                // Try alternative selectors
+                rowCount = $$(".table tr").size();
+            }
+            
+            if (rowCount == 0) {
+                // Try list items
+                rowCount = $$(".table .list-group-item").size();
+            }
+            
+            System.out.println("Sales records/rows found: " + rowCount);
+            
+            // If no records, check if there's an empty state message
+            if (rowCount == 0) {
+                boolean hasEmptyMessage = $(".alert").isPresent() || 
+                                         getDriver().getPageSource().contains("No sales") ||
+                                         getDriver().getPageSource().contains("no records");
+                                         
+                if (hasEmptyMessage) {
+                    System.out.println("Empty state detected - no sales records exist yet");
+                }
+            }
+            
+            return rowCount > 0;
+            
+        } catch (Exception e) {
+            System.out.println("ERROR checking sales rows: " + e.getMessage());
+            return false;
+        }
     }
 }

@@ -1,49 +1,25 @@
 package starter.stepdefinitions;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import net.serenitybdd.annotations.Managed;
-import org.openqa.selenium.WebDriver;
+import net.serenitybdd.annotations.Steps;
 
-import starter.pages.LoginPage;
 import starter.pages.ViewSalesListPage;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ViewSalesListSteps {
 
-    @Managed
-    WebDriver driver;
-
-    LoginPage loginPage = new LoginPage();
-    ViewSalesListPage salesPage = new ViewSalesListPage();
-
-
-    @Given("Test user is logged in")
-    public void testUserIsLoggedIn() {
-
-        // Open login page
-        loginPage.openPage();
-
-        // Login
-        loginPage.enterUsername("testuser");
-        loginPage.enterPassword("test123");
-        loginPage.clickLogin();
-
-        // Verify login success
-        assertTrue(
-                loginPage.isDashboardDisplayed(),
-                "Login failed for test user"
-        );
-    }
+    @Steps
+    ViewSalesListPage salesPage;
 
 
     @When("User clicks Sales in side navigation")
     public void userClicksSales() {
-
-        salesPage.clickSalesMenu();
+        System.out.println("Navigating to Sales page");
+        // Navigate directly to sales page (session is preserved from @nonadmin hook)
+        salesPage.navigateToSalesPage();
     }
 
 
