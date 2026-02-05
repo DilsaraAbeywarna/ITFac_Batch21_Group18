@@ -1,0 +1,60 @@
+@api @plant
+Feature: Plant API - Update Plant
+  As an Admin user
+  I want to update plant details via API
+  So that I can maintain accurate plant information in the system
+
+  Background:
+    Given the Plant API base URL is "http://localhost:8080"
+
+  @API_PLANT_EDIT_01
+  Scenario: Update plant with valid data
+    Given Admin is authenticated with valid Bearer Token
+    And a plant with id 9 exists in the system
+    When Admin sends a PUT request to "/api/plants/9" with request body:
+      """
+      {
+        "id": 9,
+        "name": "Anthurium",
+        "price": 150,
+        "quantity": 25,
+        "categoryId": 4
+      }
+      """
+    Then the response status code should be 200
+    And the response body should contain:
+      | name     | Anthurium |
+      | price    | 150.0     |
+      | quantity | 25        |
+
+  @API_PLANT_EDIT_02
+  Scenario: Update plant with empty name
+    Given Admin is authenticated with valid Bearer Token
+    And a plant with id 9 exists in the system
+    When Admin sends a PUT request to "/api/plants/9" with request body:
+      """
+      {
+        "id": 9,
+        "name": "",
+        "price": 150,
+        "quantity": 25,
+        "categoryId": 4
+      }
+      """
+    Then the response status code should be 400
+
+  @API_PLANT_EDIT_03
+  Scenario: Update plant with negative quantity
+    Given Admin is authenticated with valid Bearer Token
+    And a plant with id 9 exists in the system
+    When Admin sends a PUT request to "/api/plants/9" with request body:
+      """
+      {
+        "id": 9,
+        "name": "Test Plant",
+        "price": 150,
+        "quantity": -10,
+        "categoryId": 4
+      }
+      """
+    Then the response status code should be 400
