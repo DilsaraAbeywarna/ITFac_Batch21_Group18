@@ -35,11 +35,7 @@ public class EditCategoryPage extends PageObject {
     @FindBy(css = "h1, h2")
     public WebElementFacade pageHeading;
 
-    /**
-     * Verify if the Edit Category page is displayed
-     * 
-     * @return true if on Edit Category page
-     */
+    // Verify that we are on the Edit Category page
     public boolean isOnEditCategoryPage() {
         waitForCondition()
                 .withTimeout(Duration.ofSeconds(10))
@@ -56,11 +52,8 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Get the current value in the Category Name input field
-     * 
-     * @return current category name value
-     */
+    // Get the current value in the Category Name input field
+
     public String getCategoryNameValue() {
         try {
             WebElementFacade categoryInput = find(By.cssSelector("input#name"));
@@ -74,11 +67,7 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Clear and update the Category Name field with new value
-     * 
-     * @param newCategoryName the new category name to set
-     */
+    // Update the Category Name input field
     public void updateCategoryName(String newCategoryName) {
         try {
             WebElementFacade categoryInput = find(By.cssSelector("input#name"));
@@ -92,9 +81,6 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Click the Save button to save changes
-     */
     public void clickSaveButton() {
         try {
             WebElementFacade saveBtn = find(By.cssSelector("button[type='submit'].btn.btn-primary"));
@@ -112,9 +98,6 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Wait for save operation to complete
-     */
     public void waitForSaveCompletion() {
         try {
             Thread.sleep(1500);
@@ -123,11 +106,7 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Check if success message is displayed
-     * 
-     * @return true if success message is visible
-     */
+    // Check if success message is displayed
     public boolean isSuccessMessageDisplayed() {
         try {
             successMessage.waitUntilVisible();
@@ -143,11 +122,7 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Get the text of the success message
-     * 
-     * @return success message text
-     */
+    // Get the success message text
     public String getSuccessMessageText() {
         try {
             if (successMessage.isVisible()) {
@@ -160,11 +135,7 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Check if validation message is displayed
-     * 
-     * @return true if validation message is visible
-     */
+    // Check if validation message for Category Name is displayed
     public boolean isValidationMessageDisplayed() {
         try {
             categoryNameValidationMessage.waitUntilVisible();
@@ -180,11 +151,6 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Get the validation message text
-     * 
-     * @return validation message text
-     */
     public String getValidationMessageText() {
         try {
             return categoryNameValidationMessage.getText();
@@ -194,11 +160,6 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Get the page heading text
-     * 
-     * @return page heading text
-     */
     public String getPageHeading() {
         try {
             pageHeading.waitUntilVisible();
@@ -209,12 +170,7 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Verify the Edit Category page is displayed for a specific category
-     * 
-     * @param categoryName the expected category name
-     * @return true if the page displays the correct category
-     */
+    // Verify that the edit page is for the specified category
     public boolean isEditPageForCategory(String categoryName) {
         try {
             isOnEditCategoryPage();
@@ -228,11 +184,7 @@ public class EditCategoryPage extends PageObject {
         }
     }
 
-    /**
-     * Get the selected value from Parent Category dropdown
-     * 
-     * @return selected parent category value
-     */
+    // Get the currently selected value in the Parent Category dropdown
     public String getParentCategoryValue() {
         try {
             String selectedValue = parentCategoryDropdown.getSelectedValue();

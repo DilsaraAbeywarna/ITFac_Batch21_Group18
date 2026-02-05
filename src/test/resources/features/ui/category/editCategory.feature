@@ -13,3 +13,12 @@ Feature: Edit Category functionality
     And System displays a success message
     And System navigates back to the Category List page
     And Updated category "Outdoor" appears in the category list
+
+  @edit-button-visibility
+  Scenario: Verify Edit action is not visible to non-admin user
+    Given User is logged in as non-admin user
+    And At least one category exists in the system
+    When User navigates to Category List page
+    Then Category List page is displayed
+    And Edit action is not visible for all categories
+    And User cannot initiate category edit via UI

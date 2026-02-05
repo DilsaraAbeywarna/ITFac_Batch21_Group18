@@ -80,7 +80,6 @@ public class AddCategoryPage extends PageObject {
         waitABit(1000);
     }
 
-    // NEW METHOD - Click Cancel button
     public void clickCancelButton() {
         cancelButton.waitUntilClickable().click();
         System.out.println("Clicked Cancel button");
@@ -88,7 +87,6 @@ public class AddCategoryPage extends PageObject {
         waitABit(1000);
     }
 
-    // NEW METHOD - Check if Cancel button is visible
     public boolean isCancelButtonVisible() {
         try {
             cancelButton.waitUntilVisible();
