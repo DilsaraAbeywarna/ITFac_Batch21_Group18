@@ -106,3 +106,15 @@ Feature: Plant Edit API
       }
       """
     Then the response status code should be 400
+
+  @API_PLANT_DELETE_04
+  Scenario: API_PLANT_DELETE_04 - Delete existing plant
+    Given Admin is authenticated with valid Bearer Token
+    When Admin sends a DELETE request to "/api/plants/20"
+    Then the response status code should be 204
+
+  @API_PLANT_DELETE_05
+  Scenario: API_PLANT_DELETE_05 - Delete non-existing plant
+    Given Admin is authenticated with valid Bearer Token
+    When Admin sends a DELETE request to "/api/plants/99999"
+    Then the response status code should be 204

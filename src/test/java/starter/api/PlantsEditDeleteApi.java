@@ -56,4 +56,10 @@ public class PlantsEditDeleteApi {
                 .when()
                 .post("/api/auth/login");
     }
+
+    public Response deletePlant(String endpoint) {
+        return getRequestSpec()
+                .when()
+                .delete(endpoint);
+    }
 }

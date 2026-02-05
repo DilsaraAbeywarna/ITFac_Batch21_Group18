@@ -86,6 +86,11 @@ public class PlantEditApiSteps {
         response = plantApiClient.updatePlant(endpoint, requestBody);
     }
 
+    @When("Admin sends a DELETE request to {string}")
+    public void adminSendsADeleteRequestTo(String endpoint) {
+        response = plantApiClient.deletePlant(endpoint);
+    }
+
     @Then("the response status code should be {int}")
     public void theResponseStatusCodeShouldBe(int expectedStatusCode) {
         assertThat(response.getStatusCode())
