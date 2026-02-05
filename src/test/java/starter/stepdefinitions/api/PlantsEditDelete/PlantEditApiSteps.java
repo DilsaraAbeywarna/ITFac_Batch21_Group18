@@ -44,6 +44,28 @@ public class PlantEditApiSteps {
         plantApiClient.setBearerToken(bearerToken);
     }
 
+    @Given("Test User is authenticated with valid Bearer Token")
+    public void testUserIsAuthenticatedWithValidBearerToken() {
+        // Login as testuser to get bearer token
+        Response loginResponse = plantApiClient.login("testuser", "test123");
+        
+        if (loginResponse.getStatusCode() == 200) {
+            // Extract token from response
+            this.bearerToken = loginResponse.jsonPath().getString("token");
+            if (this.bearerToken == null || this.bearerToken.isEmpty()) {
+                // Try alternative token field names
+                this.bearerToken = loginResponse.jsonPath().getString("accessToken");
+            }
+            if (this.bearerToken == null || this.bearerToken.isEmpty()) {
+                this.bearerToken = loginResponse.jsonPath().getString("data.token");
+            }
+        } else {
+            this.bearerToken = "";
+        }
+        
+        plantApiClient.setBearerToken(bearerToken);
+    }
+
     @Given("a plant with id {int} exists in the system")
     public void aPlantWithIdExistsInTheSystem(Integer plantId) {
         // Verify the specific plant exists
@@ -56,6 +78,11 @@ public class PlantEditApiSteps {
 
     @When("Admin sends a PUT request to {string} with request body:")
     public void adminSendsAPutRequestToWithRequestBody(String endpoint, String requestBody) {
+        response = plantApiClient.updatePlant(endpoint, requestBody);
+    }
+
+    @When("Test User sends a PUT request to {string} with request body:")
+    public void testUserSendsAPutRequestToWithRequestBody(String endpoint, String requestBody) {
         response = plantApiClient.updatePlant(endpoint, requestBody);
     }
 

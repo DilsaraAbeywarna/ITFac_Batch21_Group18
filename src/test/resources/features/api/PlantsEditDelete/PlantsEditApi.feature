@@ -58,3 +58,51 @@ Feature: Plant Edit API
       }
       """
     Then the response status code should be 400
+
+  @API_PLANT_EDIT_06
+  Scenario: API_PLANT_EDIT_06 - Update plant using valid data as testuser
+    Given Test User is authenticated with valid Bearer Token
+    And a plant with id 9 exists in the system
+    When Test User sends a PUT request to "/api/plants/9" with request body:
+      """
+      {
+        "id": 9,
+        "name": "Updated Plant",
+        "price": 200,
+        "quantity": 50,
+        "categoryId": 4
+      }
+      """
+    Then the response status code should be 403
+
+  @API_PLANT_EDIT_08
+  Scenario: API_PLANT_EDIT_08 - Update plant with empty name as testuser
+    Given Test User is authenticated with valid Bearer Token
+    And a plant with id 9 exists in the system
+    When Test User sends a PUT request to "/api/plants/9" with request body:
+      """
+      {
+        "id": 9,
+        "name": "",
+        "price": 150,
+        "quantity": 25,
+        "categoryId": 4
+      }
+      """
+    Then the response status code should be 400
+
+  @API_PLANT_EDIT_10
+  Scenario: API_PLANT_EDIT_10 - Update plant with negative price as testuser
+    Given Test User is authenticated with valid Bearer Token
+    And a plant with id 9 exists in the system
+    When Test User sends a PUT request to "/api/plants/9" with request body:
+      """
+      {
+        "id": 9,
+        "name": "Test Plant",
+        "price": -100,
+        "quantity": 25,
+        "categoryId": 4
+      }
+      """
+    Then the response status code should be 400
