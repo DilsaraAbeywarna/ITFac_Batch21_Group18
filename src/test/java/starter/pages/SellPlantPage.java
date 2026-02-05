@@ -127,4 +127,53 @@ public class SellPlantPage extends PageObject {
             throw e;
         }
     }
+
+
+    /* ================= Get Validation Messages ================= */
+
+    public String getQuantityValidationMessage() {
+        System.out.println("Getting quantity validation message");
+        waitABit(500);
+        
+        try {
+            // Try common validation message patterns
+            // Pattern 1: Adjacent sibling div or span after the input
+            WebElementFacade validationMsg = find(By.cssSelector("#quantity + .invalid-feedback, #quantity + .error-message, #quantity ~ .invalid-feedback, #quantity ~ .error-message"));
+            
+            if (validationMsg.isVisible()) {
+                String message = validationMsg.getText().trim();
+                System.out.println("Found validation message: " + message);
+                return message;
+            }
+            
+            // Pattern 2: Check for HTML5 validation message
+            String validationMessage = $("#quantity").getAttribute("validationMessage");
+            if (validationMessage != null && !validationMessage.isEmpty()) {
+                System.out.println("Found HTML5 validation message: " + validationMessage);
+                return validationMessage;
+            }
+            
+            // Pattern 3: Check for custom data attribute
+            String dataError = $("#quantity").getAttribute("data-error");
+            if (dataError != null && !dataError.isEmpty()) {
+                System.out.println("Found data-error message: " + dataError);
+                return dataError;
+            }
+            
+            // Pattern 4: Look for any error message div near quantity field
+            WebElementFacade errorDiv = find(By.xpath("//input[@id='quantity']/following-sibling::*[contains(@class, 'error') or contains(@class, 'invalid')]"));
+            if (errorDiv.isVisible()) {
+                String message = errorDiv.getText().trim();
+                System.out.println("Found error div message: " + message);
+                return message;
+            }
+            
+            System.out.println("No validation message found");
+            return "";
+            
+        } catch (Exception e) {
+            System.out.println("ERROR getting validation message: " + e.getMessage());
+            return "";
+        }
+    }
 }
