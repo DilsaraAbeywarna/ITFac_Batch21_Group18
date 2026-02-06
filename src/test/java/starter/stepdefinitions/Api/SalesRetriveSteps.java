@@ -8,13 +8,12 @@ import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
 import org.assertj.core.api.Assertions;
 import utils.TokenHolder;
+import utils.ResponseHolder;
 
 import java.util.List;
 import java.util.Map;
 
 public class SalesRetriveSteps {
-
-    private Response response;
 
     @Given("Admin user is authenticated for Sales API")
     public void admin_user_is_authenticated_for_sales_api() {
@@ -28,7 +27,7 @@ public class SalesRetriveSteps {
     @When("^Admin sends GET /api/sales request$")
     public void admin_sends_get_api_sales_request() {
 	String token = TokenHolder.getToken();
-	response = SerenityRest.given()
+	Response response = SerenityRest.given()
 		.contentType(ContentType.JSON)
 		.accept(ContentType.JSON)
 		.header("Authorization", "Bearer " + token)
@@ -37,10 +36,12 @@ public class SalesRetriveSteps {
 		.then()
 		.extract()
 		.response();
+	ResponseHolder.setResponse(response);
     }
 
     @Then("Response status code is {int}")
     public void response_status_code_is(int statusCode) {
+	Response response = ResponseHolder.getResponse();
 	Assertions.assertThat(response)
 		.as("Sales API response")
 		.isNotNull();
@@ -51,6 +52,7 @@ public class SalesRetriveSteps {
 
     @Then("Response body contains a list of sales")
     public void response_body_contains_a_list_of_sales() {
+	Response response = ResponseHolder.getResponse();
 	List<Map<String, Object>> sales = response.jsonPath().getList("$");
 	Assertions.assertThat(sales)
 		.as("Sales list")
@@ -60,6 +62,7 @@ public class SalesRetriveSteps {
 
     @Then("Each sale object includes required fields")
     public void each_sale_object_includes_required_fields() {
+	Response response = ResponseHolder.getResponse();
 	List<Map<String, Object>> sales = response.jsonPath().getList("$");
 	Assertions.assertThat(sales)
 		.as("Sales list")
