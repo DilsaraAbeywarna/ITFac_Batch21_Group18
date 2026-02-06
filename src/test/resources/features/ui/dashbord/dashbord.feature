@@ -11,7 +11,7 @@ Scenario: Render Dashbord Page Successfully
 @admin
 Scenario: Change Backgorund Color Of Menu Buttons When Hover
     Given Admin logged in and is on the dashbord page
-    Given Check the side menu is rendered with releveant menu texts
+    Then Check the side menu is rendered with releveant menu texts
     When Admin hovers over the menu in the side menu
     Then The menu background color should change to "#374151"
 
@@ -22,10 +22,17 @@ Scenario: Scale up Sales Categories Inventory Plants Cards When Hovers On Each C
     When Admin hovers over the card item in the dashboard
     Then The card shows a motion on y axis
 
+
 @admin
-Scenario: Display Add Button In The Category Page
-   Given Admin logged in and is on the dashbord page
-   Given check the side menu is rendered with releveant menu texts
-   When  clicks the categories title on the sub menu  
-   And naviagate to the categories page 
-   Then Add a category button should visible
+Scenario: Show Category Plants Sales Summary Information On Each Card
+   Given Admin is logged in as admin
+   When Admin navigates to the categories page
+   Then Admin adds 15 categories to the system
+   Then Admin navigates to dashboard page
+   Then Check the 04 card componenets are rendered 
+   Then Admin should see 15 main categories on dashboard
+   Then Admin should see 0 sub categories on dashboard
+   And Admin should see 0 total plants on dashboard
+   And Admin should see 0 low stock plants on dashboard
+   And Admin should see revenue "Rs 0.0" on dashboard
+   And Admin should see 0 sales count on dashboard
