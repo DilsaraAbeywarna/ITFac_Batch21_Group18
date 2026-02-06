@@ -1,6 +1,6 @@
 Feature: Edit Category access control
 
-  @access-edit
+  @access-edit @access-edit-category
   Scenario: Verify non-admin user cannot access Edit Category page via direct URL
     Given User is logged in as non-admin user
     When User enters "/ui/categories/edit/{id}" directly in the browser address bar
@@ -8,7 +8,7 @@ Feature: Edit Category access control
     Then User should be redirected to 403 or dashboard and see access denied message
     And Edit Category page with id "dynamic" is not displayed
 
-  @edit-button-visibility
+  @access-edit @edit-button-visibility
   Scenario: Verify Edit action is not visible to non-admin user
     Given User is logged in as non-admin user
     And At least one category exists in the system

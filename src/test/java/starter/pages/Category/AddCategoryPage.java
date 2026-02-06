@@ -7,154 +7,209 @@ import net.serenitybdd.core.pages.WebElementFacade;
 
 import java.time.Duration;
 
-@DefaultUrl("/ui/categories/add")
+@DefaultUrl("http://localhost:8080/ui/categories/add")
 public class AddCategoryPage extends PageObject {
 
-    // Category Name input field
+    // ========== LOCATORS ==========
+
+    // Input Fields
     @FindBy(css = "input#name")
-    public WebElementFacade categoryNameInput;
+    private WebElementFacade categoryNameInput;
 
-    // Parent Category dropdown
     @FindBy(css = "select#parentId")
-    public WebElementFacade parentCategoryDropdown;
+    private WebElementFacade parentCategoryDropdown;
 
-    // Save button
-    @FindBy(css = "button[type='submit'].btn.btn-primary")
-    public WebElementFacade saveButton;
+    // Action Buttons
+    @FindBy(css = "button[type='submit'].btn-primary")
+    private WebElementFacade saveButton;
 
-    // Cancel button - NEW
-    @FindBy(css = "a[href='/ui/categories'].btn.btn-secondary")
-    public WebElementFacade cancelButton;
+    @FindBy(css = "a[href='/ui/categories'].btn-secondary")
+    private WebElementFacade cancelButton;
 
-    // Success message
-    @FindBy(css = ".alert-success, .alert.alert-success")
-    public WebElementFacade successMessage;
+    // Messages
+    @FindBy(css = ".alert-success")
+    private WebElementFacade successMessage;
 
-    // Validation error message for Category Name field
-    @FindBy(xpath = "//input[@id='name']/following-sibling::div[@class='invalid-feedback'] | //input[@id='name']/parent::div//div[contains(@class, 'invalid-feedback')] | //input[@id='name']/parent::div//span[contains(text(), 'required')]")
-    public WebElementFacade categoryNameValidationMessage;
+    @FindBy(css = "input#name ~ .invalid-feedback")
+    private WebElementFacade categoryNameValidationMessage;
+
+    // Alternative validation message locator
+    @FindBy(xpath = "//input[@id='name']/following-sibling::div[contains(@class, 'invalid-feedback')]")
+    private WebElementFacade validationMessageAlt;
+
+    // ========== PAGE STATE VERIFICATION ==========
 
     public boolean isOnAddCategoryPage() {
-        System.out.println("Waiting for Add Category page...");
-        System.out.println("Current URL before wait: " + getDriver().getCurrentUrl());
-
         try {
             waitForCondition()
                     .withTimeout(Duration.ofSeconds(10))
-                    .until(driver -> {
-                        String currentUrl = driver.getCurrentUrl();
-                        System.out.println("Checking URL: " + currentUrl);
-                        return currentUrl.contains("/ui/categories/add") || currentUrl.contains("/ui/categories/edit");
-                    });
+                    .pollingEvery(Duration.ofMillis(500))
+                    .until(driver -> isAddCategoryUrl());
 
-            System.out.println("URL verified. Waiting for Category Name input field...");
-            categoryNameInput.waitUntilVisible();
-            System.out.println("Category Name input field is visible");
-
+            categoryNameInput.waitUntilPresent();
+            logInfo("Add Category page loaded successfully");
             return true;
         } catch (Exception e) {
-            System.out.println("Failed to verify Add Category page. Final URL: " + getDriver().getCurrentUrl());
-            throw e;
+            logError("Failed to verify Add Category page. URL: " + getCurrentUrl());
+            throw new AssertionError("Not on Add Category page", e);
         }
     }
 
+    private boolean isAddCategoryUrl() {
+        String currentUrl = getDriver().getCurrentUrl();
+        return currentUrl.contains("/ui/categories/add") ||
+                currentUrl.contains("/ui/categories/edit");
+    }
+
+    // ========== INPUT METHODS ==========
+
     public void enterCategoryName(String categoryName) {
-        categoryNameInput.waitUntilVisible().type(categoryName);
-        System.out.println("Entered category name: " + categoryName);
+        categoryNameInput.waitUntilVisible();
+        categoryNameInput.clear();
+        categoryNameInput.type(categoryName);
+        logInfo("Entered category name: " + categoryName);
+    }
+
+    public String getCategoryNameValue() {
+        categoryNameInput.waitUntilPresent();
+        return categoryNameInput.getValue();
+    }
+
+    public void clearCategoryName() {
+        categoryNameInput.waitUntilVisible();
+        categoryNameInput.clear();
+        logInfo("Cleared category name field");
     }
 
     public void leaveParentCategoryEmpty() {
-        // Verify that the parent category dropdown is set to empty/Main Category
         String selectedValue = parentCategoryDropdown.getSelectedValue();
-        System.out.println("Parent Category dropdown value: " + selectedValue);
-
-        if (selectedValue == null || selectedValue.isEmpty()) {
-            System.out.println("Parent Category is already empty (Main Category)");
-        }
+        logInfo("Parent Category value: " + (selectedValue == null || selectedValue.isEmpty()
+                ? "Empty (Main Category)"
+                : selectedValue));
     }
+
+    // ========== BUTTON ACTIONS ==========
 
     public void clickSaveButton() {
         saveButton.waitUntilClickable().click();
-        System.out.println("Clicked Save button");
-        // Wait for page to start processing after save
-        waitABit(1000);
+        waitForPageLoad();
+        logInfo("Clicked Save button");
     }
 
     public void clickCancelButton() {
         cancelButton.waitUntilClickable().click();
-        System.out.println("Clicked Cancel button");
-        // Wait for navigation to complete
-        waitABit(1000);
+        waitForPageLoad();
+        logInfo("Clicked Cancel button");
     }
 
     public boolean isCancelButtonVisible() {
         try {
-            cancelButton.waitUntilVisible();
-            boolean isVisible = cancelButton.isVisible();
-            System.out.println("Cancel button visibility: " + isVisible);
-            return isVisible;
+            return cancelButton.withTimeoutOf(Duration.ofSeconds(5)).isVisible();
         } catch (Exception e) {
-            System.out.println("Cancel button not found: " + e.getMessage());
+            logInfo("Cancel button not visible");
             return false;
         }
     }
 
-    public void waitForSaveCompletion() {
-        waitABit(1500);
+    public boolean isSaveButtonEnabled() {
+        try {
+            saveButton.waitUntilPresent();
+            return saveButton.isEnabled();
+        } catch (Exception e) {
+            logError("Save button not found or not enabled");
+            return false;
+        }
     }
+
+    // ========== MESSAGE VERIFICATION ==========
 
     public boolean isSuccessMessageDisplayed() {
         try {
             successMessage.waitUntilVisible();
-            boolean isVisible = successMessage.isVisible();
-            System.out.println("Success message visibility: " + isVisible);
-            if (isVisible) {
-                System.out.println("Success message text: " + successMessage.getText());
-            }
-            return isVisible;
+            String messageText = successMessage.getText();
+            logInfo("Success message: " + messageText);
+            return true;
         } catch (Exception e) {
-            System.out.println("Success message not found: " + e.getMessage());
+            logInfo("Success message not displayed");
             return false;
         }
     }
 
-    public String getCategoryNameValue() {
-        return categoryNameInput.getValue();
+    public String getSuccessMessageText() {
+        try {
+            if (successMessage.isVisible()) {
+                return successMessage.getText();
+            }
+        } catch (Exception e) {
+            logError("Error getting success message: " + e.getMessage());
+        }
+        return "";
     }
+
+    // ========== VALIDATION METHODS ==========
 
     public boolean isValidationMessageDisplayed() {
         try {
-            categoryNameValidationMessage.waitUntilVisible();
-            boolean isVisible = categoryNameValidationMessage.isVisible();
-            System.out.println("Validation message visibility: " + isVisible);
-            if (isVisible) {
-                System.out.println("Validation message text: " + categoryNameValidationMessage.getText());
+            // Try primary locator first
+            if (categoryNameValidationMessage.withTimeoutOf(Duration.ofSeconds(2)).isVisible()) {
+                logInfo("Validation message: " + categoryNameValidationMessage.getText());
+                return true;
             }
-            return isVisible;
+
+            // Try alternative locator
+            if (validationMessageAlt.withTimeoutOf(Duration.ofSeconds(2)).isVisible()) {
+                logInfo("Validation message (alt): " + validationMessageAlt.getText());
+                return true;
+            }
+
+            logInfo("No validation message displayed");
+            return false;
         } catch (Exception e) {
-            System.out.println("Validation message not found: " + e.getMessage());
+            logInfo("Validation message not found");
             return false;
         }
     }
 
     public String getValidationMessageText() {
         try {
-            return categoryNameValidationMessage.getText();
+            if (categoryNameValidationMessage.isVisible()) {
+                return categoryNameValidationMessage.getText();
+            }
+            if (validationMessageAlt.isVisible()) {
+                return validationMessageAlt.getText();
+            }
         } catch (Exception e) {
-            System.out.println("Error getting validation message text: " + e.getMessage());
-            return "";
+            logError("Error getting validation message: " + e.getMessage());
         }
+        return "";
     }
 
     public boolean isValidationMessageContainsRequiredText() {
-        try {
-            String messageText = getValidationMessageText();
-            boolean containsRequired = messageText.toLowerCase().contains("required");
-            System.out.println("Validation message contains 'required': " + containsRequired);
-            return containsRequired;
-        } catch (Exception e) {
-            System.out.println("Error checking validation message: " + e.getMessage());
-            return false;
-        }
+        String messageText = getValidationMessageText().toLowerCase();
+        boolean containsRequired = messageText.contains("required");
+        logInfo("Validation contains 'required': " + containsRequired);
+        return containsRequired;
+    }
+
+    // ========== UTILITY METHODS ==========
+
+    public void waitForSaveCompletion() {
+        waitABit(1500);
+    }
+
+    private void waitForPageLoad() {
+        waitABit(1000);
+    }
+
+    private String getCurrentUrl() {
+        return getDriver().getCurrentUrl();
+    }
+
+    private void logInfo(String message) {
+        System.out.println(message);
+    }
+
+    private void logError(String message) {
+        System.err.println(message);
     }
 }

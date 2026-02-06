@@ -1,198 +1,226 @@
 package starter.pages.Category;
 
 import net.serenitybdd.annotations.DefaultUrl;
-import net.serenitybdd.core.annotations.findby.FindBy;
 import net.serenitybdd.core.pages.PageObject;
-import net.serenitybdd.core.pages.WebElementFacade;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 
 import java.time.Duration;
 
-@DefaultUrl("http://localhost:8080/ui/categories")
+@DefaultUrl("http://localhost:8080/ui/categories/edit")
 public class EditCategoryPage extends PageObject {
 
-    // Category Name input field
-    @FindBy(css = "input#name")
-    public WebElementFacade categoryNameInput;
+    // ========== LOCATORS ==========
+    private By categoryNameInputLocator = By.cssSelector("input#name");
+    private By parentCategoryDropdownLocator = By.cssSelector("select#parentId");
+    private By saveButtonLocator = By.cssSelector("button[type='submit'].btn-primary");
+    private By pageHeadingLocator = By.cssSelector("h1, h2");
+    private By successMessageLocator = By.cssSelector(".alert-success");
+    private By validationMessageLocator = By.cssSelector("input#name ~ .invalid-feedback");
 
-    // Parent Category dropdown
-    @FindBy(css = "select#parentId")
-    public WebElementFacade parentCategoryDropdown;
+    // ========== PAGE STATE VERIFICATION ==========
 
-    // Save button
-    @FindBy(css = "button[type='submit'].btn.btn-primary")
-    public WebElementFacade saveButton;
-
-    // Success message
-    @FindBy(css = ".alert-success, .alert.alert-success")
-    public WebElementFacade successMessage;
-
-    // Validation error message for Category Name field
-    @FindBy(xpath = "//input[@id='name']/following-sibling::div[@class='invalid-feedback'] | //input[@id='name']/parent::div//div[contains(@class, 'invalid-feedback')] | //input[@id='name']/parent::div//span[contains(text(), 'required')]")
-    public WebElementFacade categoryNameValidationMessage;
-
-    // Page heading/title
-    @FindBy(css = "h1, h2")
-    public WebElementFacade pageHeading;
-
-    // Verify that we are on the Edit Category page
     public boolean isOnEditCategoryPage() {
-        waitForCondition()
-                .withTimeout(Duration.ofSeconds(10))
-                .until(driver -> driver.getCurrentUrl().matches(".*/ui/categories/edit/\\d+.*"));
-
-        // Use find() method instead of relying on @FindBy injection
         try {
-            WebElementFacade categoryInput = find(By.cssSelector("input#name"));
-            categoryInput.waitUntilVisible();
+            logInfo("Waiting for Edit Category URL...");
+            waitForCondition()
+                    .withTimeout(Duration.ofSeconds(10))
+                    .pollingEvery(Duration.ofMillis(500))
+                    .until(driver -> isEditCategoryUrl());
+
+            logInfo("✓ Edit Category URL verified: " + getCurrentUrl());
+
+            // Wait for page to load
+            waitABit(2000);
+
+            // Wait for the input field to be present and visible
+            waitForCondition()
+                    .withTimeout(Duration.ofSeconds(10))
+                    .pollingEvery(Duration.ofMillis(500))
+                    .until(driver -> {
+                        try {
+                            WebElement element = driver.findElement(categoryNameInputLocator);
+                            return element != null && element.isDisplayed();
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    });
+
+            logInfo("Edit Category page loaded successfully");
             return true;
+
         } catch (Exception e) {
-            System.out.println("Error waiting for category name input: " + e.getMessage());
-            throw e;
+            logError("Failed to verify Edit Category page. URL: " + getCurrentUrl());
+            logError("Error: " + e.getMessage());
+            throw new AssertionError("Not on Edit Category page", e);
         }
     }
 
-    // Get the current value in the Category Name input field
-
-    public String getCategoryNameValue() {
-        try {
-            WebElementFacade categoryInput = find(By.cssSelector("input#name"));
-            categoryInput.waitUntilVisible();
-            String value = categoryInput.getValue();
-            System.out.println("Current Category Name value: " + value);
-            return value;
-        } catch (Exception e) {
-            System.out.println("Error getting category name value: " + e.getMessage());
-            return "";
-        }
+    private boolean isEditCategoryUrl() {
+        String currentUrl = getCurrentUrl();
+        return currentUrl.matches(".*/ui/categories/edit/\\d+.*");
     }
 
-    // Update the Category Name input field
-    public void updateCategoryName(String newCategoryName) {
+    public boolean isEditPageForCategory(String categoryName) {
         try {
-            WebElementFacade categoryInput = find(By.cssSelector("input#name"));
-            categoryInput.waitUntilVisible();
-            categoryInput.clear();
-            categoryInput.type(newCategoryName);
-            System.out.println("Updated category name to: " + newCategoryName);
+            isOnEditCategoryPage();
+            String currentValue = getCategoryNameValue();
+            boolean matches = currentValue.equalsIgnoreCase(categoryName);
+            logInfo("Edit page for '" + categoryName + "': " + matches +
+                    " (Current: '" + currentValue + "')");
+            return matches;
         } catch (Exception e) {
-            System.out.println("Error updating category name: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    public void clickSaveButton() {
-        try {
-            WebElementFacade saveBtn = find(By.cssSelector("button[type='submit'].btn.btn-primary"));
-            saveBtn.waitUntilClickable().click();
-            System.out.println("Clicked Save button");
-            // Wait for page to start processing after save
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        } catch (Exception e) {
-            System.out.println("Error clicking Save button: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    public void waitForSaveCompletion() {
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    // Check if success message is displayed
-    public boolean isSuccessMessageDisplayed() {
-        try {
-            successMessage.waitUntilVisible();
-            boolean isVisible = successMessage.isVisible();
-            System.out.println("Success message visibility: " + isVisible);
-            if (isVisible) {
-                System.out.println("Success message text: " + successMessage.getText());
-            }
-            return isVisible;
-        } catch (Exception e) {
-            System.out.println("Success message not found: " + e.getMessage());
+            logError("Error verifying category match: " + e.getMessage());
             return false;
         }
     }
 
-    // Get the success message text
-    public String getSuccessMessageText() {
+    // ========== INPUT METHODS ==========
+
+    public String getCategoryNameValue() {
+        WebElement input = getDriver().findElement(categoryNameInputLocator);
+        waitFor(input).waitUntilVisible();
+        String value = input.getAttribute("value");
+        logInfo("Current category name: " + value);
+        return value;
+    }
+
+    public void updateCategoryName(String newCategoryName) {
+        WebElement input = getDriver().findElement(categoryNameInputLocator);
+        waitFor(input).waitUntilVisible();
+        input.clear();
+        input.sendKeys(newCategoryName);
+        logInfo("Updated category name to: " + newCategoryName);
+    }
+
+    public void clearCategoryName() {
+        WebElement input = getDriver().findElement(categoryNameInputLocator);
+        waitFor(input).waitUntilVisible();
+        input.clear();
+        logInfo("Cleared category name");
+    }
+
+    public String getParentCategoryValue() {
         try {
-            if (successMessage.isVisible()) {
-                return successMessage.getText();
-            }
-            return "";
+            WebElement dropdown = getDriver().findElement(parentCategoryDropdownLocator);
+            Select select = new Select(dropdown);
+            String selectedValue = select.getFirstSelectedOption().getAttribute("value");
+            logInfo("Parent category value: " + selectedValue);
+            return selectedValue != null ? selectedValue : "";
         } catch (Exception e) {
-            System.out.println("Error getting success message text: " + e.getMessage());
+            logError("Error getting parent category: " + e.getMessage());
             return "";
         }
     }
 
-    // Check if validation message for Category Name is displayed
+    // ========== BUTTON ACTIONS ==========
+
+    public void clickSaveButton() {
+        WebElement button = getDriver().findElement(saveButtonLocator);
+        waitFor(button).waitUntilClickable();
+        button.click();
+        waitForPageLoad();
+        logInfo("Clicked Save button");
+    }
+
+    public boolean isSaveButtonEnabled() {
+        try {
+            WebElement button = getDriver().findElement(saveButtonLocator);
+            return button.isEnabled();
+        } catch (Exception e) {
+            logError("Save button not enabled");
+            return false;
+        }
+    }
+
+    // ========== MESSAGE VERIFICATION ==========
+
+    public boolean isSuccessMessageDisplayed() {
+        try {
+            WebElement message = getDriver().findElement(successMessageLocator);
+            waitFor(message).waitUntilVisible();
+            String messageText = message.getText();
+            logInfo("Success message: " + messageText);
+            return true;
+        } catch (Exception e) {
+            logInfo("Success message not displayed");
+            return false;
+        }
+    }
+
+    public String getSuccessMessageText() {
+        try {
+            WebElement message = getDriver().findElement(successMessageLocator);
+            if (message.isDisplayed()) {
+                return message.getText();
+            }
+        } catch (Exception e) {
+            logError("Error getting success message: " + e.getMessage());
+        }
+        return "";
+    }
+
+    // ========== VALIDATION METHODS ==========
+
     public boolean isValidationMessageDisplayed() {
         try {
-            categoryNameValidationMessage.waitUntilVisible();
-            boolean isVisible = categoryNameValidationMessage.isVisible();
-            System.out.println("Validation message visibility: " + isVisible);
-            if (isVisible) {
-                System.out.println("Validation message text: " + categoryNameValidationMessage.getText());
+            WebElement message = getDriver().findElement(validationMessageLocator);
+            if (message.isDisplayed()) {
+                logInfo("Validation message: " + message.getText());
+                return true;
             }
-            return isVisible;
+            return false;
         } catch (Exception e) {
-            System.out.println("Validation message not found: " + e.getMessage());
+            logInfo("No validation message displayed");
             return false;
         }
     }
 
     public String getValidationMessageText() {
         try {
-            return categoryNameValidationMessage.getText();
+            WebElement message = getDriver().findElement(validationMessageLocator);
+            if (message.isDisplayed()) {
+                return message.getText();
+            }
         } catch (Exception e) {
-            System.out.println("Error getting validation message text: " + e.getMessage());
-            return "";
+            logError("Error getting validation message: " + e.getMessage());
         }
+        return "";
     }
+
+    // ========== PAGE INFO METHODS ==========
 
     public String getPageHeading() {
         try {
-            pageHeading.waitUntilVisible();
-            return pageHeading.getText();
+            WebElement heading = getDriver().findElement(pageHeadingLocator);
+            waitFor(heading).waitUntilVisible();
+            return heading.getText();
         } catch (Exception e) {
-            System.out.println("Error getting page heading: " + e.getMessage());
+            logError("Error getting page heading: " + e.getMessage());
             return "";
         }
     }
 
-    // Verify that the edit page is for the specified category
-    public boolean isEditPageForCategory(String categoryName) {
-        try {
-            isOnEditCategoryPage();
-            String currentValue = getCategoryNameValue();
-            boolean matches = currentValue.equalsIgnoreCase(categoryName);
-            System.out.println("Edit page is for category '" + categoryName + "': " + matches);
-            return matches;
-        } catch (Exception e) {
-            System.out.println("Error verifying edit page for category: " + e.getMessage());
-            return false;
-        }
+    // ========== UTILITY METHODS ==========
+
+    public void waitForSaveCompletion() {
+        waitABit(1500);
     }
 
-    // Get the currently selected value in the Parent Category dropdown
-    public String getParentCategoryValue() {
-        try {
-            String selectedValue = parentCategoryDropdown.getSelectedValue();
-            System.out.println("Parent Category dropdown value: " + selectedValue);
-            return selectedValue != null ? selectedValue : "";
-        } catch (Exception e) {
-            System.out.println("Error getting parent category value: " + e.getMessage());
-            return "";
-        }
+    private void waitForPageLoad() {
+        waitABit(1000);
+    }
+
+    private String getCurrentUrl() {
+        return getDriver().getCurrentUrl();
+    }
+
+    private void logInfo(String message) {
+        System.out.println(message);
+    }
+
+    private void logError(String message) {
+        System.err.println(message);
     }
 }

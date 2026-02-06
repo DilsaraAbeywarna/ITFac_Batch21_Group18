@@ -1,6 +1,6 @@
 Feature: Add Category access control
 
-  @access-add
+  @access-add @access-add-category
   Scenario: Verify non-admin user cannot access Add Category page via direct URL
     Given User is logged in as non-admin user
     When User enters "/ui/categories/add" directly in the browser address bar
@@ -9,7 +9,7 @@ Feature: Add Category access control
     And Add Category page is not displayed
 
 
-  @button-visibility
+  @access-add @button-visibility
   Scenario: Verify Add Category button is not visible to non-admin user
     Given User is logged in as non-admin user
     When User navigates to Category List page
@@ -18,7 +18,7 @@ Feature: Add Category access control
     And User is unable to navigate to Add Category page via UI
 
   
-@cancel-navigation
+@access-add @cancel-navigation
 Scenario: Verify non-admin user cannot access Add Category page via direct URL
   Given User is logged in as non-admin user
   When User enters "/ui/categories/add" directly in the browser address bar
