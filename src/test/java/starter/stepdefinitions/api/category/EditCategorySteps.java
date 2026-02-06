@@ -107,7 +107,7 @@ public class EditCategorySteps {
     // Verify response status code is 403 Forbidden
     @Then("API should return {int} Forbidden status for category update")
     public void apiShouldReturnForbiddenStatusForCategoryUpdate(int expectedStatus) {
-        verifyStatusCode(expectedStatus, "API_Category_EditCategoryUnauthorized_008");
+        verifyStatusCode(expectedStatus, "API_Category_EditCategoryUnauthorized");
     }
 
     // And steps
@@ -194,12 +194,31 @@ public class EditCategorySteps {
                 System.out.println("✓ Category details verified as unchanged:");
                 System.out.println("  Category ID: " + categoryId);
                 System.out.println("  Name (unchanged): " + currentName);
-                System.out.println("✓ Test Case API_Category_EditCategoryUnauthorized_008 - PASSED");
+                System.out.println("✓ Unauthorized update test - PASSED");
                 break;
             }
         }
 
         assertTrue(categoryFound, "Could not find category ID " + dynamicCategoryId + " for verification");
+    }
+
+    // Verify validation rules were not applied due to lack of permission
+    @And("Validation rules should not be applied due to lack of permission for update")
+    public void validationRulesShouldNotBeAppliedDueToLackOfPermissionForUpdate() {
+        String responseBody = addEditCategoriesPageAPI.getResponseBody();
+
+        // Verify that response does NOT contain validation details
+        assertFalse(responseBody.contains("\"details\""),
+                "Response should not contain validation details for unauthorized users");
+
+        assertFalse(responseBody.contains("Validation failed"),
+                "Response should not contain validation messages for unauthorized users");
+
+        assertFalse(responseBody.contains("Category name must be between"),
+                "Response should not contain specific validation error messages for unauthorized users");
+
+        System.out.println("✓ Validation rules were not applied (as expected for unauthorized access)");
+        System.out.println("✓ Test Case API_Category_EditCategoryInvalidDataUnauthorized_009 - PASSED");
     }
 
     // helper methods
@@ -219,6 +238,7 @@ public class EditCategorySteps {
         System.out.println("Category ID: " + categoryId);
         System.out.println("Original Name: '" + originalName + "'");
         System.out.println("New Name: '" + newName + "'");
+        System.out.println("Name Length: " + newName.length() + " characters");
         System.out.println("Request Body: " + categoryBody);
         System.out.println("=".repeat(60));
     }

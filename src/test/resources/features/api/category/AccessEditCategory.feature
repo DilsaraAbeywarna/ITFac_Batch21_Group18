@@ -9,3 +9,12 @@ Feature: Edit Category access control
     Then API should return 403 Forbidden status for category update
     And Response body should contain error type "Forbidden"
     And Category details should remain unchanged in the system
+
+  @api-edit-unauthorized @api-edit-unauthorized-invalid-data
+  Scenario: Verify non-admin user cannot update category with invalid data
+    Given A category exists in the system
+    When Non-Admin user updates the category name to "In"
+    Then API should return 403 Forbidden status for category update
+    And Response body should contain error type "Forbidden"
+    And Category details should remain unchanged in the system
+    And Validation rules should not be applied due to lack of permission for update
