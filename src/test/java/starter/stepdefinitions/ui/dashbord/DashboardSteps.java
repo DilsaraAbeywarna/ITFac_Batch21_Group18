@@ -10,7 +10,7 @@ import starter.pages.LoginPage;
 import starter.pages.Category.CategoryPage;
 import net.serenitybdd.annotations.Managed;
 import net.serenitybdd.annotations.Steps;
-import net.serenitybdd.model.time.InternalSystemClock;
+
 
 public class DashboardSteps {
     @Managed
