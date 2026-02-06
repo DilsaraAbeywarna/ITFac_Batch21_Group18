@@ -20,6 +20,7 @@ public class CommonCategoryValidationSteps {
     private static final String FIELD_MESSAGE = "message";
     private static final String FIELD_DETAILS = "details";
     private static final String FIELD_ERROR = "error";
+    private static final String FIELD_STATUS = "status";
 
     // Step definition for verifying 400 Bad Request status for category creation
     @Then("API should return {int} Bad Request status for category creation")
@@ -27,11 +28,13 @@ public class CommonCategoryValidationSteps {
         int actualStatus = addEditCategoriesPageAPI.getStatusCode();
         String responseBody = addEditCategoriesPageAPI.getResponseBody();
 
-        System.out.println("API Validation Test");
+        System.out.println("=".repeat(60));
+        System.out.println("API Validation Test - Bad Request");
         System.out.println("Endpoint: POST /api/categories");
         System.out.println("Expected Status: " + expectedStatus);
         System.out.println("Actual Status: " + actualStatus);
         System.out.println("Response Body: " + responseBody);
+        System.out.println("=".repeat(60));
 
         assertEquals(expectedStatus, actualStatus,
                 String.format("Expected status code %d (Bad Request), but got: %d\nResponse: %s",
@@ -72,11 +75,18 @@ public class CommonCategoryValidationSteps {
         System.out.println("✓ Validation error message verified for category creation");
     }
 
+    // Step definition for verifying error type in response body
     @And("Response body should contain error type {string}")
     public void responseBodyShouldContainErrorType(String expectedErrorType) {
+        String responseBody = addEditCategoriesPageAPI.getResponseBody();
+
+        // Try to get error from 'error' field first (for validation errors and
+        // forbidden)
         String actualErrorType = addEditCategoriesPageAPI.getJsonPathValue(FIELD_ERROR);
 
-        assertNotNull(actualErrorType, "Error type should not be null");
+        assertNotNull(actualErrorType,
+                "Error type should not be null. Response: " + responseBody);
+
         assertEquals(expectedErrorType, actualErrorType,
                 String.format("Expected error type '%s' but got '%s'",
                         expectedErrorType, actualErrorType));

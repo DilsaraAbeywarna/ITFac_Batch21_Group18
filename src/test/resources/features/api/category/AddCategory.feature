@@ -32,3 +32,5 @@ Feature: Add category functionality
     And Response body should contain validation error message for category creation
     And Response body should contain error type "BAD_REQUEST"
     And Category should not be created in the system
+
+

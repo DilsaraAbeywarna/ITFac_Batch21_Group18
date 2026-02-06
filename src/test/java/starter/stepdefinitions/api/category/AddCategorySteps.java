@@ -21,19 +21,35 @@ public class AddCategorySteps {
     private static final String FIELD_ID = "id";
     private static final String FIELD_SUB_CATEGORIES = "subCategories";
 
-    // Create category steps
+    // Create category steps - Admin user
 
     @When("Admin user sends POST request to create main category with name {string}")
     public void adminUserCreatesMainCategoryWithName(String categoryName) {
         Map<String, Object> categoryBody = buildCategoryRequestBody(categoryName);
-        logCategoryCreationRequest(categoryName, categoryBody);
+        logCategoryCreationRequest("Admin", categoryName, categoryBody);
 
         addEditCategoriesPageAPI.createCategory(categoryBody);
 
-        // Verify API call was successful
+        // Verify API call was made
         assertNotNull(addEditCategoriesPageAPI.getResponse(),
                 "API response is null. Request may not have been sent successfully.");
     }
+
+    // Create category steps - Non-Admin user
+
+    @When("Non-Admin user sends POST request to create main category with name {string}")
+    public void nonAdminUserCreatesMainCategoryWithName(String categoryName) {
+        Map<String, Object> categoryBody = buildCategoryRequestBody(categoryName);
+        logCategoryCreationRequest("Non-Admin", categoryName, categoryBody);
+
+        addEditCategoriesPageAPI.createCategory(categoryBody);
+
+        // Verify API call was made
+        assertNotNull(addEditCategoriesPageAPI.getResponse(),
+                "API response is null. Request may not have been sent successfully.");
+    }
+
+    // Then steps
 
     // Verify response status code is 201 Created
     @Then("API should return {int} Created status for category")
@@ -41,7 +57,14 @@ public class AddCategorySteps {
         verifyStatusCode(expectedStatus, "API_Category_CreateCategory_001");
     }
 
-    // Test Step: Verify API returns 400 Bad Request status
+    // Verify response status code is 403 Forbidden
+    @Then("API should return {int} Forbidden status for category creation")
+    public void apiShouldReturnForbiddenStatusForCategoryCreation(int expectedStatus) {
+        verifyStatusCode(expectedStatus, "API_Category_CreateCategoryUnauthorized_006");
+    }
+
+    // And steps
+
     @And("Response body should contain category name {string}")
     public void responseBodyShouldContainCategoryName(String expectedCategoryName) {
         String responseBody = addEditCategoriesPageAPI.getResponseBody();
@@ -110,20 +133,30 @@ public class AddCategorySteps {
     public void categoryShouldNotBeCreatedInSystem() {
         String responseBody = addEditCategoriesPageAPI.getResponseBody();
 
-        // Verify category not created
+        // Verify category not created - response should not have 'id' field
         assertFalse(responseBody.contains("\"" + FIELD_ID + "\""),
-                "Response should not contain 'id' field for validation errors");
+                "Response should not contain 'id' field when category creation fails");
 
-        // Verify error structure exists
-        assertTrue(responseBody.contains("\"error\""),
+        // Verify error structure exists (either validation error or forbidden error)
+        assertTrue(responseBody.contains("\"error\"") || responseBody.contains("\"status\""),
                 "Response should contain error information");
-        assertTrue(responseBody.contains("\"details\""),
-                "Response should contain validation details");
-        assertTrue(responseBody.contains("\"status\""),
-                "Response should contain status code");
 
-        System.out.println("Category was not created");
-        System.out.println("Validation test - PASSED");
+        System.out.println("✓ Category was not created in the system");
+        System.out.println("✓ Validation test - PASSED");
+    }
+
+    @And("Validation rules should not be applied due to lack of permission")
+    public void validationRulesShouldNotBeAppliedDueToLackOfPermission() {
+        String responseBody = addEditCategoriesPageAPI.getResponseBody();
+
+        // Verify that response does NOT contain validation details
+        assertFalse(responseBody.contains("\"details\""),
+                "Response should not contain validation details for unauthorized users");
+
+        assertFalse(responseBody.contains("Validation failed"),
+                "Response should not contain validation messages for unauthorized users");
+
+        System.out.println("✓ Validation rules were not applied (as expected for unauthorized access)");
     }
 
     // helper methods
@@ -136,10 +169,13 @@ public class AddCategorySteps {
     }
 
     // Logs the category creation request details
-    private void logCategoryCreationRequest(String categoryName, Map<String, Object> categoryBody) {
-        System.out.println("Creating MAIN category with name: '" + categoryName + "'");
+    private void logCategoryCreationRequest(String userType, String categoryName, Map<String, Object> categoryBody) {
+        System.out.println("=".repeat(60));
+        System.out.println("Creating category as " + userType + " user");
+        System.out.println("Category name: '" + categoryName + "'");
         System.out.println("Name Length: " + categoryName.length() + " characters");
         System.out.println("Request Body: " + categoryBody);
+        System.out.println("=".repeat(60));
     }
 
     // Verifies the status code and logs the details
@@ -156,14 +192,16 @@ public class AddCategorySteps {
         assertEquals(expectedStatus, actualStatus,
                 String.format("Expected status code %d, but got: %d\nResponse: %s",
                         expectedStatus, actualStatus, responseBody));
+
+        System.out.println("✓ Status code " + expectedStatus + " verified successfully");
     }
 
     // Logs successful category creation
     private void logCategoryCreationSuccess(Integer categoryId, String categoryName) {
-        System.out.println("Main category created successfully:");
-        System.out.println("Category ID: " + categoryId);
-        System.out.println("Category Name: " + categoryName);
-        System.out.println("SubCategories field");
-        System.out.println("All main category details verified successfully");
+        System.out.println("✓ Main category created successfully:");
+        System.out.println("  Category ID: " + categoryId);
+        System.out.println("  Category Name: " + categoryName);
+        System.out.println("  SubCategories field: Present");
+        System.out.println("✓ All main category details verified successfully");
     }
 }
