@@ -7,11 +7,11 @@ import org.openqa.selenium.By;
 
 public class PlantsEditDelete extends PageObject {
 
-    // Dashboard → Manage Plants button
+    // Dashboard Manage Plants button
     @FindBy(css = "a[href='/ui/plants']")
     private WebElementFacade managePlantsButton;
 
-    // First Edit button in Plants list
+    // Edit button in Plants list
     @FindBy(css = "a[title='Edit']")
     private WebElementFacade firstEditButton;
 
@@ -74,14 +74,12 @@ public class PlantsEditDelete extends PageObject {
     }
 
     public void selectSubCategory(String subCategoryValue) {
-        // Try to find and select subcategory dropdown
         try {
             WebElementFacade subCategoryDropdown = find(By.cssSelector("select[name='subcategoryId']"));
             if (subCategoryDropdown.isPresent()) {
                 subCategoryDropdown.selectByValue(subCategoryValue);
             }
         } catch (Exception e) {
-            // Skip if subcategory dropdown is not found
         }
     }
 
@@ -147,7 +145,6 @@ public class PlantsEditDelete extends PageObject {
 
     public void selectCategoryByValue(String categoryValue) {
         WebElementFacade categorySelect = find(By.id("categoryId"));
-        // Handle both empty string ("") and "0" to represent the default/empty option
         if (categoryValue.equals("0") || categoryValue.isEmpty()) {
             categorySelect.selectByValue("");
         } else {
