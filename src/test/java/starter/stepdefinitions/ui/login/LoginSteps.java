@@ -5,19 +5,24 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import starter.pages.LoginPage;
 import net.serenitybdd.annotations.Managed;
-import org.openqa.selenium.WebDriver;
+import net.serenitybdd.annotations.Steps;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.openqa.selenium.WebDriver;
+
 public class LoginSteps {
     @Managed
     WebDriver driver;
-    
-    LoginPage loginPage = new LoginPage();
+
+    @Steps
+    LoginPage loginPage;
 
     @Given("Admin is on the login page")
     public void adminIsOnLoginPage() {
+        loginPage.setDriver(driver);
         loginPage.openPage();
     }
 
@@ -37,5 +42,4 @@ public class LoginSteps {
     public void verifyError(String message) {
         assertEquals(message, loginPage.getErrorMessage());
     }
-
 }
