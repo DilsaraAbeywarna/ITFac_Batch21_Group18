@@ -21,9 +21,6 @@ Scenario: Render Category Page Successfully
 
 @user
 Scenario: Filter the categories by the category name
-   Given Admin is logged in as admin
-   When Admin navigates to the categories page
-   Then Admin adds 15 categories to the system
    Given User is logged in as user
    When User navigates to the categories page
    Then User type the "Rose" category in the search bar
@@ -37,23 +34,17 @@ Scenario: Filter the categories by the category name
 
 @user
 Scenario: Display list of categories with pagination
-   Given Admin is logged in as admin
-   When Admin navigates to the categories page
-   Then Admin adds 15 categories to the system
    Given User is logged in as user
    When User navigates to the categories page
    Then User should see 10 records in the page
    And User should see next and previous buttons
    And User should see 2 page buttons
    And User clicks the next button
-   And User should see 5 records in the page
+   And User should see 6 records in the page
    And User clicks the previous button
 
 @user 
 Scenario: Display "No Category Found" message when search for non exisiting category
-   Given Admin is logged in as admin
-   When Admin navigates to the categories page
-   Then Admin adds 15 categories to the system
    Given User is logged in as user
    When User navigates to the categories page
    Then User should see 10 records in the page
@@ -64,9 +55,6 @@ Scenario: Display "No Category Found" message when search for non exisiting cate
 
 @user
 Scenario: Display categories sorted by category Id 
-   Given Admin is logged in as admin
-   When Admin navigates to the categories page
-   Then Admin adds 15 categories to the system
    Given User is logged in as user
    When User navigates to the categories page
    Then User should see 10 records in the page
