@@ -21,15 +21,7 @@ public class PlantsAddSteps {
 
     // ==================== Test Case: Add Plant Button Visibility ====================
     
-    @Given("Admin is logged in")
-    public void adminIsLoggedIn() {
-        loginPage.openPage();
-        loginPage.enterUsername("admin");
-        loginPage.enterPassword("admin123");
-        loginPage.clickLogin();
-        loginPage.waitForSuccessfulLogin();
-        logger.info("Admin logged in successfully");
-    }
+    // REMOVED DUPLICATE: @Given("Admin is logged in") - Already exists in LoginSteps.java
 
     @And("Admin is on plant list page")
     public void adminIsOnPlantListPage() {
