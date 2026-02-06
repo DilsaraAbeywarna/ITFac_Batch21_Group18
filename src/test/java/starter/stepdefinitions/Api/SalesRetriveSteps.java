@@ -16,6 +16,14 @@ public class SalesRetriveSteps {
 
     private Response response;
 
+    @Given("Admin user is authenticated for Sales API")
+    public void admin_user_is_authenticated_for_sales_api() {
+        String token = TokenHolder.getToken();
+        Assertions.assertThat(token)
+                .as("Admin token")
+                .isNotNull()
+                .isNotBlank();
+    }
 
     @When("^Admin sends GET /api/sales request$")
     public void admin_sends_get_api_sales_request() {
