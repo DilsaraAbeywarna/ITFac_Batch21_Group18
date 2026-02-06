@@ -260,4 +260,36 @@ public class PlantsEditSteps {
         );
     }
 
+    // UI_PLANTEDIT_CATEGORY_08
+
+    private String originalCategory;
+    private String newCategory;
+
+    @When("Admin user notes the current category")
+    public void adminUserNotesTheCurrentCategory() {
+        originalCategory = plantsEditDelete.getCurrentSelectedCategory();
+        System.out.println("Original category: " + originalCategory);
+    }
+
+    @When("Admin user selects a different valid sub-category {string}")
+    public void adminUserSelectsADifferentValidSubCategory(String category) {
+        newCategory = category;
+        plantsEditDelete.selectCategoryByVisibleText(category);
+        System.out.println("Selected new category: " + newCategory);
+    }
+
+    @Then("the category changes are not saved and the original category is displayed")
+    public void theCategoryChangesAreNotSavedAndTheOriginalCategoryIsDisplayed() {
+        String currentCategoryInList = plantsEditDelete.getFirstPlantCategoryInList();
+        System.out.println("Current category in list: " + currentCategoryInList);
+        System.out.println("Expected (original): " + originalCategory);
+        System.out.println("Should NOT be (new): " + newCategory);
+        
+        assertTrue(
+            currentCategoryInList.equals(originalCategory),
+            String.format("Category was changed from '%s' to '%s', but should have remained '%s'",
+                originalCategory, currentCategoryInList, originalCategory)
+        );
+    }
+
 }

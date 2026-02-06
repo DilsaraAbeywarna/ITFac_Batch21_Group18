@@ -93,3 +93,14 @@ Feature: Plant Edit
     Given Test User is logged in and has navigated to the Plant page
     When Test User navigates to the Plant List page
     Then Edit button is not displayed for the Test User role
+
+  @admin 
+  Scenario: UI_PLANTEDIT_CATEGORY_08 - Verify edit page Category selection
+    Given Admin user is logged in and on the dashboard
+    When Admin user navigates to the Plant List page
+    And Admin user clicks the Edit button of a plant
+    And Admin user notes the current category
+    And Admin user selects a different valid sub-category "category01"
+    And Admin user clicks the Save button
+    Then Admin user is redirected to plants page
+    And the category changes are not saved and the original category is displayed

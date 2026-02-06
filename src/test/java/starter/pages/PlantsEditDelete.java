@@ -241,5 +241,23 @@ public class PlantsEditDelete extends PageObject {
             return false;
         }
     }
+
+    // UI_PLANTEDIT_CATEGORY_08 - Get current selected category
+    public String getCurrentSelectedCategory() {
+        return categoryDropdown.getSelectedVisibleTextValue();
+    }
+
+    // UI_PLANTEDIT_CATEGORY_08 - Get category from plant list
+    @FindBy(xpath = "//table//tbody/tr[1]/td[4]")
+    private WebElementFacade firstPlantCategory;
+
+    public String getFirstPlantCategoryInList() {
+        try {
+            waitFor(2).seconds();
+            return firstPlantCategory.getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
 }
 
