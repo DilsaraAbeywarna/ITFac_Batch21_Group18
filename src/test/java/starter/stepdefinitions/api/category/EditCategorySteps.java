@@ -53,22 +53,36 @@ public class EditCategorySteps {
         assertNotNull(dynamicCategoryId, "Category ID should not be null");
         assertNotNull(originalCategoryName, "Category name should not be null");
 
-        System.out.println("Found category to update:");
-        System.out.println("Category ID: " + dynamicCategoryId);
-        System.out.println("Original Name: " + originalCategoryName);
-
+        System.out.println("✓ Found category to update:");
+        System.out.println("  Category ID: " + dynamicCategoryId);
+        System.out.println("  Original Name: " + originalCategoryName);
     }
 
     // When steps
 
-    // Updates the dynamically fetched category with a new name
+    // Updates the dynamically fetched category with a new name - Admin user
     @When("Admin user updates the category name to {string}")
     public void adminUserUpdatesTheCategoryNameTo(String newCategoryName) {
         assertNotNull(dynamicCategoryId,
                 "No category ID available. Ensure 'Given' step has been executed to fetch a category.");
 
         Map<String, Object> categoryBody = buildCategoryRequestBody(newCategoryName);
-        logCategoryUpdateRequest(dynamicCategoryId, originalCategoryName, newCategoryName, categoryBody);
+        logCategoryUpdateRequest("Admin", dynamicCategoryId, originalCategoryName, newCategoryName, categoryBody);
+
+        addEditCategoriesPageAPI.updateCategory(dynamicCategoryId, categoryBody);
+
+        assertNotNull(addEditCategoriesPageAPI.getResponse(),
+                "API response is null. Request may not have been sent successfully.");
+    }
+
+    // Updates the dynamically fetched category with a new name - Non-Admin user
+    @When("Non-Admin user updates the category name to {string}")
+    public void nonAdminUserUpdatesTheCategoryNameTo(String newCategoryName) {
+        assertNotNull(dynamicCategoryId,
+                "No category ID available. Ensure 'Given' step has been executed to fetch a category.");
+
+        Map<String, Object> categoryBody = buildCategoryRequestBody(newCategoryName);
+        logCategoryUpdateRequest("Non-Admin", dynamicCategoryId, originalCategoryName, newCategoryName, categoryBody);
 
         addEditCategoriesPageAPI.updateCategory(dynamicCategoryId, categoryBody);
 
@@ -90,6 +104,12 @@ public class EditCategorySteps {
         verifyStatusCode(expectedStatus, "API_Category_InvalidUpdateValidation");
     }
 
+    // Verify response status code is 403 Forbidden
+    @Then("API should return {int} Forbidden status for category update")
+    public void apiShouldReturnForbiddenStatusForCategoryUpdate(int expectedStatus) {
+        verifyStatusCode(expectedStatus, "API_Category_EditCategoryUnauthorized_008");
+    }
+
     // And steps
 
     // Verify response body contains the updated category name
@@ -106,7 +126,7 @@ public class EditCategorySteps {
                 String.format("Expected category name '%s' but got '%s'",
                         expectedCategoryName, actualCategoryName));
 
-        System.out.println("Category name updated to '" + expectedCategoryName);
+        System.out.println("✓ Category name updated to '" + expectedCategoryName + "'");
     }
 
     // Verify category ID remains unchanged after update
@@ -121,7 +141,7 @@ public class EditCategorySteps {
                 String.format("Expected category ID %d but got %d",
                         dynamicCategoryId, actualCategoryId));
 
-        System.out.println("Category ID " + actualCategoryId);
+        System.out.println("✓ Category ID remains: " + actualCategoryId);
     }
 
     // Verify category update is persisted in the system
@@ -132,6 +152,7 @@ public class EditCategorySteps {
         try {
             Integer categoryId = addEditCategoriesPageAPI.getJsonPathValue(FIELD_ID);
             String categoryName = addEditCategoriesPageAPI.getJsonPathValue(FIELD_NAME);
+
             assertNotNull(categoryId, "Category ID should not be null");
             assertNotNull(categoryName, "Category name should not be null");
             assertTrue(categoryId > 0,
@@ -158,7 +179,7 @@ public class EditCategorySteps {
 
         List<Map<String, Object>> categories = verifyResponse.jsonPath().getList("$");
 
-        // Find the category that tried to update
+        // Find the category that was attempted to be updated
         boolean categoryFound = false;
         for (Map<String, Object> category : categories) {
             Integer categoryId = (Integer) category.get(FIELD_ID);
@@ -166,14 +187,14 @@ public class EditCategorySteps {
                 String currentName = (String) category.get(FIELD_NAME);
 
                 assertEquals(originalCategoryName, currentName,
-                        String.format("Category name changed from '%s' to '%s' despite validation error",
+                        String.format("Category name changed from '%s' to '%s' despite unauthorized access",
                                 originalCategoryName, currentName));
 
                 categoryFound = true;
-                System.out.println("Category details verified as unchanged");
-                System.out.println("Category ID: " + categoryId);
-                System.out.println("Name (unchanged): " + currentName);
-                System.out.println("Validation test - PASSED");
+                System.out.println("✓ Category details verified as unchanged:");
+                System.out.println("  Category ID: " + categoryId);
+                System.out.println("  Name (unchanged): " + currentName);
+                System.out.println("✓ Test Case API_Category_EditCategoryUnauthorized_008 - PASSED");
                 break;
             }
         }
@@ -191,11 +212,15 @@ public class EditCategorySteps {
     }
 
     // Logs the category update request details
-    private void logCategoryUpdateRequest(int categoryId, String originalName, String newName,
+    private void logCategoryUpdateRequest(String userType, int categoryId, String originalName, String newName,
             Map<String, Object> categoryBody) {
-
-        System.out.println("Category updated with new name: '" + newName + "'" + categoryId);
-
+        System.out.println("=".repeat(60));
+        System.out.println("Updating category as " + userType + " user");
+        System.out.println("Category ID: " + categoryId);
+        System.out.println("Original Name: '" + originalName + "'");
+        System.out.println("New Name: '" + newName + "'");
+        System.out.println("Request Body: " + categoryBody);
+        System.out.println("=".repeat(60));
     }
 
     // Verifies the status code and logs the details
@@ -203,20 +228,27 @@ public class EditCategorySteps {
         int actualStatus = addEditCategoriesPageAPI.getStatusCode();
         String responseBody = addEditCategoriesPageAPI.getResponseBody();
 
+        System.out.println("=".repeat(60));
         System.out.println("API Test: " + testCaseId);
         System.out.println("Endpoint: PUT /api/categories/{id}");
         System.out.println("Expected Status: " + expectedStatus);
         System.out.println("Actual Status: " + actualStatus);
         System.out.println("Response Body: " + responseBody);
+        System.out.println("=".repeat(60));
 
         assertEquals(expectedStatus, actualStatus,
                 String.format("Expected status code %d, but got: %d\nResponse: %s",
                         expectedStatus, actualStatus, responseBody));
+
+        System.out.println("✓ Status code " + expectedStatus + " verified successfully");
     }
 
     // Logs successful category update
     private void logCategoryUpdateSuccess(Integer categoryId, String newCategoryName, String originalName) {
-        System.out.println("✓ Category updated successfully with new name: '" + newCategoryName + "'" + categoryId);
-
+        System.out.println("✓ Category updated successfully:");
+        System.out.println("  Category ID: " + categoryId);
+        System.out.println("  Original Name: '" + originalName + "'");
+        System.out.println("  New Name: '" + newCategoryName + "'");
+        System.out.println("✓ Test Case API_Category_UpdateCategory_004 - PASSED");
     }
 }
