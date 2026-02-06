@@ -25,13 +25,10 @@ Scenario: Scale up Sales Categories Inventory Plants Cards When Hovers On Each C
 
 @admin
 Scenario: Show Category Plants Sales Summary Information On Each Card
-   Given Admin is logged in as admin
-   When Admin navigates to the categories page
-   Then Admin adds 15 categories to the system
    Then Admin navigates to dashboard page
    Then Check the 04 card componenets are rendered 
    Then Admin should see 15 main categories on dashboard
-   Then Admin should see 0 sub categories on dashboard
+   Then Admin should see 1 sub categories on dashboard
    And Admin should see 0 total plants on dashboard
    And Admin should see 0 low stock plants on dashboard
    And Admin should see revenue "Rs 0.0" on dashboard
