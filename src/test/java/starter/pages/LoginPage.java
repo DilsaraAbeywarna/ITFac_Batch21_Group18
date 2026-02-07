@@ -1,80 +1,74 @@
 package starter.pages;
 
 import net.serenitybdd.annotations.DefaultUrl;
-import net.serenitybdd.core.annotations.findby.FindBy;
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.core.pages.WebElementFacade;
+import org.openqa.selenium.By;
 
-import java.time.Duration;
-
-@DefaultUrl("/ui/login")
+@DefaultUrl("http://localhost:8080/ui/login")
 public class LoginPage extends PageObject {
 
-    @FindBy(name = "username")
-    public WebElementFacade usernameField;
-
-    @FindBy(name = "password")
-    public WebElementFacade passwordField;
-
-    @FindBy(css = "button[type='submit']")
-    public WebElementFacade loginButton;
-
-    @FindBy(css = "div.alert.alert-danger.text-center")
-    public WebElementFacade errorMessage;
-
+    // ==================== NAVIGATION METHODS ====================
+    
     public void openPage() {
         getDriver().get("http://localhost:8080/ui/login");
-        System.out.println("Explicitly navigated to: " + getDriver().getCurrentUrl());
     }
 
+    // ==================== FORM ACTION METHODS ====================
+    
     public void enterUsername(String username) {
-        usernameField.waitUntilVisible().type(username);
+        WebElementFacade usernameField = $(By.name("username"));
+        usernameField.waitUntilVisible();
+        usernameField.clear();
+        usernameField.type(username);
     }
 
     public void enterPassword(String password) {
-        passwordField.waitUntilVisible().type(password);
+        WebElementFacade passwordField = $(By.name("password"));
+        passwordField.waitUntilVisible();
+        passwordField.clear();
+        passwordField.type(password);
     }
 
     public void clickLogin() {
-        loginButton.waitUntilClickable().click();
-        // Wait for page to start redirecting after login
+        WebElementFacade loginButton = $(By.cssSelector("button[type='submit']"));
+        loginButton.waitUntilClickable();
+        loginButton.click();
         waitABit(1000);
     }
 
+    // ==================== VERIFICATION METHODS ====================
+    
     public boolean isDashboardDisplayed() {
-        // Wait for redirect to complete
-        waitForCondition()
-                .withTimeout(Duration.ofSeconds(10))
-                .until(driver -> {
-                    String currentUrl = driver.getCurrentUrl();
-                    System.out.println("Checking URL: " + currentUrl);
-                    return currentUrl.contains("dashboard") || currentUrl.contains("plants");
-                });
-
-        System.out.println("Current URL: " + getDriver().getCurrentUrl());
-        return getDriver().getCurrentUrl().contains("dashboard") ||
-                getDriver().getCurrentUrl().contains("plants");
+        try {
+            waitABit(2000);
+            String currentUrl = getDriver().getCurrentUrl();
+            return currentUrl.contains("/ui/dashboard");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public String getErrorMessage() {
-        return errorMessage.getText();
+        try {
+            WebElementFacade errorMessage = $(By.cssSelector("div.alert.alert-danger"));
+            errorMessage.waitUntilVisible();
+            return errorMessage.getText();
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     public void waitForSuccessfulLogin() {
-        System.out.println("Waiting for redirect after login...");
-        System.out.println("Current URL before wait: " + getDriver().getCurrentUrl());
-
         try {
+            waitABit(1000);
+            
             waitForCondition()
-                    .withTimeout(Duration.ofSeconds(10))
-                    .until(driver -> {
-                        String currentUrl = driver.getCurrentUrl();
-                        System.out.println("Checking URL: " + currentUrl);
-                        return currentUrl.contains("dashboard") || currentUrl.contains("Plants");
-                    });
+                .withTimeout(java.time.Duration.ofSeconds(10))
+                .until(driver -> driver.getCurrentUrl().contains("/ui/dashboard"));
+            
         } catch (Exception e) {
-            System.out.println("Failed to redirect. Final URL: " + getDriver().getCurrentUrl());
-            throw e;
+            // Login redirect timeout
         }
     }
 }

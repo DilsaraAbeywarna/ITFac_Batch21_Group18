@@ -22,7 +22,7 @@ public class LoginSteps {
     @Steps
     LoginPage loginPage;
 
-    // ==================== Admin Login Feature Steps ====================
+    // ==================== LOGIN FEATURE STEPS ====================
 
     @Given("Admin is on the login page")
     public void adminIsOnLoginPage() {
@@ -46,7 +46,7 @@ public class LoginSteps {
         assertEquals(message, loginPage.getErrorMessage());
     }
 
-    // ==================== Shared Login Steps (For Plant Tests) ====================
+    // ==================== SHARED LOGIN STEPS FOR OTHER FEATURES ====================
 
     @Given("Normal User is logged in")
     public void normalUserIsLoggedIn() {

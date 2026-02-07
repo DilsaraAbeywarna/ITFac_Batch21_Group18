@@ -1,3 +1,4 @@
+@ui
 Feature: Plant Add Page UI/UX
 
   # Test Case 5: Low Badge Display (UI/UX)
@@ -38,14 +39,14 @@ Feature: Plant Add Page UI/UX
     Given Admin is logged in
     And At least one sub-category exists
     And Admin is on Add Plant page
-    When Admin enters plant name "Rose"
+    When Admin enters plant name "Poppy"
     And Admin selects a sub-category from dropdown
     And Admin enters price "50"
     And Admin enters quantity "10"
     And Admin clicks the Save button
-    Then System displays success message
-    And User is redirected to plant list page
-    And New plant "Rose" appears in the list
+    Then User is redirected to plant list page
+    And System displays success message
+    And New plant "Poppy" appears in the list
 
   # Test Case 3: Plant name length validation (3-25 chars)
   Scenario: Plant name too short shows validation error

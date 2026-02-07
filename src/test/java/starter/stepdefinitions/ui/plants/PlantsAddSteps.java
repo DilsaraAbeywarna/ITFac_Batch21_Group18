@@ -1,9 +1,7 @@
 package starter.stepdefinitions.ui.plants;
 
 import io.cucumber.java.en.*;
-import net.serenitybdd.annotations.Managed;
-import org.openqa.selenium.WebDriver;
-import starter.pages.LoginPage;
+import net.serenitybdd.annotations.Steps;
 import starter.pages.Plants.PlantsAddPage;
 
 import org.slf4j.Logger;
@@ -13,15 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PlantsAddSteps {
     private static final Logger logger = LoggerFactory.getLogger(PlantsAddSteps.class);
 
-    @Managed
-    WebDriver driver;
+    @Steps
+    PlantsAddPage plantsAddPage;
 
-    LoginPage loginPage = new LoginPage();
-    PlantsAddPage plantsAddPage = new PlantsAddPage();
-
-    // ==================== Test Case: Add Plant Button Visibility ====================
-    
-    // REMOVED DUPLICATE: @Given("Admin is logged in") - Already exists in LoginSteps.java
+    // ==================== TEST CASE: UI_PlantList_AddButtonVisibility(UI/UX)_001 ====================
+    // Verify Add Plant button visible to Admin
 
     @And("Admin is on plant list page")
     public void adminIsOnPlantListPage() {
@@ -58,11 +52,11 @@ public class PlantsAddSteps {
         logger.info("{} button is enabled and clickable", buttonName);
     }
 
-    // ==================== Test Case: Verify Admin can add plant with valid data ====================
+    // ==================== TEST CASE: UI_PlantAdd_ValidCreation(UI/UX)_002 ====================
+    // Verify Admin can add plant with valid data
     
     @And("At least one sub-category exists")
     public void atLeastOneSubCategoryExists() {
-        // This is a precondition, assumed true for UI test. Could add API/database check if needed.
         logger.info("Assuming at least one sub-category exists.");
     }
 
@@ -102,34 +96,51 @@ public class PlantsAddSteps {
         logger.info("Clicked Save button");
     }
 
-    @Then("System displays success message")
-    public void systemDisplaysSuccessMessage() {
-        assertTrue(plantsAddPage.isSuccessMessageDisplayed(), "Success message not displayed");
-        logger.info("Success message displayed");
+    @Then("User is redirected to plant list page")
+    public void userIsRedirectedToPlantListPage() {
+        plantsAddPage.waitForDuration(1000);
+        
+        boolean redirected = plantsAddPage.isOnPlantListPageAfterAdd();
+        
+        assertTrue(redirected, 
+            "Not redirected to plant list page. Current URL: " + 
+            plantsAddPage.getDriver().getCurrentUrl());
+        
+        logger.info("Redirected to plant list page");
     }
 
-    @And("User is redirected to plant list page")
-    public void userIsRedirectedToPlantListPage() {
-        assertTrue(plantsAddPage.isOnPlantListPageAfterAdd(), "Not redirected to plant list page");
-        logger.info("Redirected to plant list page");
+    @And("System displays success message")
+    public void systemDisplaysSuccessMessage() {
+        plantsAddPage.waitForDuration(500);
+        
+        boolean successDisplayed = plantsAddPage.isSuccessMessageDisplayed();
+        
+        assertTrue(successDisplayed, 
+            "Success message not displayed after plant creation");
+        
+        logger.info("Success message displayed");
     }
 
     @And("New plant {string} appears in the list")
     public void newPlantAppearsInList(String plantName) {
-        assertTrue(plantsAddPage.isPlantInList(plantName), "New plant not found in list");
+        plantsAddPage.waitForDuration(1000);
+        
+        boolean plantFound = plantsAddPage.isPlantInList(plantName);
+        
+        if (!plantFound) {
+            plantsAddPage.getDriver().navigate().refresh();
+            plantsAddPage.waitForDuration(2000);
+            plantFound = plantsAddPage.isPlantInList(plantName);
+        }
+        
+        assertTrue(plantFound, 
+            "New plant '" + plantName + "' not found in list after creation");
+        
         logger.info("New plant '{}' appears in the list", plantName);
     }
 
-    // ==================== Test Case: Price validation (> 0) ====================
-    
-    @Then("Error message {string} is displayed below price field in red")
-    public void errorMessageDisplayedBelowPriceField(String expectedMessage) {
-        assertTrue(plantsAddPage.isPriceValidationErrorDisplayed(expectedMessage),
-            "Expected price validation error not displayed or not in red color");
-        logger.info("Price validation error displayed: {}", expectedMessage);
-    }
-
-    // ==================== Test Case: Plant name length validation (3-25 chars) ====================
+    // ==================== TEST CASE: UI_PlantAdd_NameLengthValidation(UI/UX)_003 ====================
+    // Verify plant name length validation (3-25 chars)
     
     @Then("Error message {string} is displayed below name field in red")
     public void errorMessageDisplayedBelowNameField(String expectedMessage) {
@@ -140,14 +151,24 @@ public class PlantsAddSteps {
 
     @And("Plant is not created")
     public void plantIsNotCreated() {
-        // Optionally check that we are still on the add page or that no success message is shown
         boolean stillOnAddPage = plantsAddPage.getDriver().getCurrentUrl().contains("/ui/plants/add");
         boolean noSuccess = !plantsAddPage.isSuccessMessageDisplayed();
         assertTrue(stillOnAddPage && noSuccess, "Plant was created or redirected unexpectedly");
         logger.info("Plant is not created as expected");
     }
 
-    // ==================== Test Case: Low Badge Display ====================
+    // ==================== TEST CASE: UI_PlantAdd_PriceValidation(UI/UX)_004 ====================
+    // Verify price validation (must be > 0)
+    
+    @Then("Error message {string} is displayed below price field in red")
+    public void errorMessageDisplayedBelowPriceField(String expectedMessage) {
+        assertTrue(plantsAddPage.isPriceValidationErrorDisplayed(expectedMessage),
+            "Expected price validation error not displayed or not in red color");
+        logger.info("Price validation error displayed: {}", expectedMessage);
+    }
+
+    // ==================== TEST CASE: UI_PlantList_LowBadgeDisplay(UI/UX)_005 ====================
+    // Verify Low badge displays when quantity < 5
 
     @When("Admin navigates to {string}")
     public void adminNavigatesToUrl(String url) {

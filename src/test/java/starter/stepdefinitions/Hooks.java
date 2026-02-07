@@ -1,55 +1,100 @@
 package starter.stepdefinitions;
 
 import io.cucumber.java.Before;
+import io.cucumber.java.After;
 import utils.TokenHolder;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
+import org.openqa.selenium.WebDriver;
+import net.serenitybdd.core.Serenity;
 
-/**
- * Cucumber Hooks for setting up preconditions
- * Handles authentication token generation for different user roles
- */
 public class Hooks {
 
-    /**
-     * Hook for @adminapi tagged scenarios
-     * Generates and stores Admin authentication token before scenario execution
-     */
+    // ==================== API AUTHENTICATION HOOKS ====================
+
     @Before("@adminapi")
     public void setupAdminToken() {
-        System.out.println("🔐 Setting up Admin token for @adminapi scenario");
-        
-        // Generate Admin token via login endpoint
-        Response response = SerenityRest.given()
-                .contentType("application/json")
-                .body("{ \"username\": \"admin\", \"password\": \"admin123\" }")
-                .post("/api/auth/login");
-        
-        // Extract token from response
-        String token = response.jsonPath().getString("token");
-        TokenHolder.setToken(token);
-        
-        System.out.println("Admin token generated successfully");
+        try {
+            TokenHolder.clearToken();
+            
+            Response response = SerenityRest.given()
+                    .contentType("application/json")
+                    .body("{ \"username\": \"admin\", \"password\": \"admin123\" }")
+                    .post("/api/auth/login");
+            
+            int statusCode = response.getStatusCode();
+            
+            if (statusCode == 200) {
+                String token = response.jsonPath().getString("token");
+                
+                if (token != null && !token.trim().isEmpty()) {
+                    TokenHolder.setToken(token);
+                } else {
+                    throw new RuntimeException("Admin token is null or empty");
+                }
+            } else {
+                throw new RuntimeException("Admin login failed with status: " + statusCode);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Admin token setup failed", e);
+        }
     }
 
-    /**
-     * Hook for @nonadminapi tagged scenarios
-     * Generates and stores regular User authentication token before scenario execution
-     */
     @Before("@nonadminapi")
     public void setupNonAdminToken() {
-        System.out.println("🔐 Setting up User token for @nonadminapi scenario");
-        
-        // Generate User token (testuser) via login endpoint
-        Response response = SerenityRest.given()
-                .contentType("application/json")
-                .body("{ \"username\": \"testuser\", \"password\": \"test123\" }")
-                .post("/api/auth/login");
-        
-        // Extract token from response
-        String token = response.jsonPath().getString("token");
-        TokenHolder.setToken(token);
-        
-        System.out.println("User token generated successfully");
+        try {
+            TokenHolder.clearToken();
+            
+            Response response = SerenityRest.given()
+                    .contentType("application/json")
+                    .body("{ \"username\": \"testuser\", \"password\": \"test123\" }")
+                    .post("/api/auth/login");
+            
+            int statusCode = response.getStatusCode();
+            
+            if (statusCode == 200) {
+                String token = response.jsonPath().getString("token");
+                
+                if (token != null && !token.trim().isEmpty()) {
+                    TokenHolder.setToken(token);
+                } else {
+                    throw new RuntimeException("User token is null or empty");
+                }
+            } else {
+                throw new RuntimeException("User login failed with status: " + statusCode);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("User token setup failed", e);
+        }
+    }
+
+    // ==================== CLEANUP HOOKS ====================
+
+    @After("@ui")
+    public void cleanupUISession() {
+        try {
+            WebDriver driver = Serenity.getDriver();
+            if (driver != null) {
+                driver.manage().deleteAllCookies();
+            }
+        } catch (Exception e) {
+            // Silent cleanup - don't fail tests
+        }
+    }
+
+    @After("@adminapi or @nonadminapi")
+    public void cleanupAPISession() {
+        try {
+            if (TokenHolder.hasToken()) {
+                TokenHolder.clearToken();
+            }
+        } catch (Exception e) {
+            // Silent cleanup - don't fail tests
+        }
+    }
+
+    @After(order = 0)
+    public void globalCleanup() {
+        // Global cleanup placeholder
     }
 }

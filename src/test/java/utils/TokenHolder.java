@@ -1,35 +1,35 @@
 package utils;
 
-/**
- * Utility class to store and retrieve authentication tokens
- * Used for sharing JWT tokens across step definitions
- */
 public class TokenHolder {
-    private static String token;
+    
+    private static ThreadLocal<String> token = new ThreadLocal<>();
 
-    /**
-     * Store a new authentication token
-     * 
-     * @param newToken JWT token to store
-     */
     public static void setToken(String newToken) {
-        token = newToken;
+        if (newToken == null || newToken.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token cannot be null or empty");
+        }
+        token.set(newToken);
     }
 
-    /**
-     * Retrieve the stored authentication token
-     * 
-     * @return Current JWT token
-     */
     public static String getToken() {
-        return token;
+        return token.get();
     }
 
-    /**
-     * Clear the stored token
-     * Useful for cleanup between test scenarios
-     */
     public static void clearToken() {
-        token = null;
+        token.remove();
+    }
+
+    public static boolean hasToken() {
+        String currentToken = token.get();
+        return currentToken != null && !currentToken.trim().isEmpty();
+    }
+
+    public static String getTokenOrThrow() {
+        String currentToken = token.get();
+        if (currentToken == null || currentToken.trim().isEmpty()) {
+            throw new IllegalStateException("Authentication token is not set! " +
+                "Make sure @adminapi or @nonadminapi hook is executed before this step.");
+        }
+        return currentToken;
     }
 }

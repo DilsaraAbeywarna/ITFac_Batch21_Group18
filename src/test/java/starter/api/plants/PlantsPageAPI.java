@@ -6,21 +6,12 @@ import utils.TokenHolder;
 
 import java.util.Map;
 
-/**
- * API Page Object for Plants endpoints
- * Contains methods for interacting with the Plants API
- */
 public class PlantsPageAPI {
 
     private Response response;
 
-    /**
-     * Create a plant under a specific category (sub-category)
-     * Endpoint: POST /api/plants/category/{categoryId}
-     * 
-     * @param categoryId The category/sub-category ID
-     * @param plantBody Plant details (name, price, quantity)
-     */
+    // ==================== TEST CASES: 001-004, 009 - CREATE PLANT OPERATIONS ====================
+    
     public void createPlantUnderCategory(int categoryId, Map<String, Object> plantBody) {
         response = SerenityRest.given()
                 .contentType("application/json")
@@ -29,29 +20,61 @@ public class PlantsPageAPI {
                 .post("/api/plants/category/" + categoryId);
     }
 
-    /**
-     * Get the HTTP status code from the response
-     * 
-     * @return Status code (e.g., 201, 400, 403, 404, 500)
-     */
+    public void createPlantWithoutAuth(int categoryId, Map<String, Object> plantBody) {
+        response = SerenityRest.given()
+            .contentType("application/json")
+            .body(plantBody)
+            .post("/api/plants/category/" + categoryId);
+    }
+
+    // ==================== TEST CASES: 005, 006 - GET PLANT OPERATIONS ====================
+    
+    public void getPaginatedPlants(int page, int size) {
+        response = SerenityRest.given()
+                .header("Authorization", "Bearer " + TokenHolder.getToken())
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .get("/api/plants/paged");
+    }
+
+    public void getAllPlants() {
+        response = SerenityRest.given()
+                .header("Authorization", "Bearer " + TokenHolder.getToken())
+                .get("/api/plants");
+    }
+
+    // ==================== TEST CASE: 007 - SEARCH PLANTS OPERATION ====================
+    
+    public void searchPlantsByName(String searchName, int page, int size) {
+        response = SerenityRest.given()
+                .header("Authorization", "Bearer " + TokenHolder.getToken())
+                .queryParam("name", searchName)
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .get("/api/plants/paged");
+    }
+
+    // ==================== TEST CASE: 008 - FILTER PLANTS OPERATION ====================
+    
+    public void filterPlantsByCategory(int categoryId, int page, int size) {
+        response = SerenityRest.given()
+                .header("Authorization", "Bearer " + TokenHolder.getToken())
+                .queryParam("categoryId", categoryId)
+                .queryParam("page", page)
+                .queryParam("size", size)
+                .get("/api/plants/paged");
+    }
+
+    // ==================== RESPONSE HELPER METHODS ====================
+    
     public int getStatusCode() {
         return response.getStatusCode();
     }
 
-    /**
-     * Get response body as string
-     * 
-     * @return Response body in string format
-     */
     public String getResponseBody() {
         return response.getBody().asString();
     }
 
-    /**
-     * Get the full Response object for advanced assertions
-     * 
-     * @return Response object from REST Assured
-     */
     public Response getResponse() {
         return response;
     }
