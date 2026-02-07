@@ -21,6 +21,10 @@ public class AddCategorySteps {
     private static final String FIELD_ID = "id";
     private static final String FIELD_SUB_CATEGORIES = "subCategories";
 
+    // shared state for cleanup/hooks
+    public static Long lastCreatedCategoryId = null;
+    public static String lastCreatedCategoryName = null;
+
     // Create category steps - Admin user
 
     @When("Admin user sends POST request to create main category with name {string}")

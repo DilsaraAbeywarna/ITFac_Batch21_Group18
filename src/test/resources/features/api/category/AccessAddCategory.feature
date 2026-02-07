@@ -1,5 +1,4 @@
 @nonadminapi 
-@api-add-category @security
 Feature: Add category access control
 
   @api-add-unauthorized @api-add-unauthorized-create

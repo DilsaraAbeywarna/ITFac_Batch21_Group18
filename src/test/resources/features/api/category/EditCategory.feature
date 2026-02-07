@@ -10,7 +10,7 @@ Feature: Edit category functionality
     And Response body should contain the same category ID
     And Category should be updated successfully in the system
 
-     @api-edit-category @api-edit-category-empty-name
+  @api-edit-category @api-edit-category-empty-name
   Scenario: Verify API rejects category update with empty name
     Given A category exists in the system
     When Admin user updates the category name to ""

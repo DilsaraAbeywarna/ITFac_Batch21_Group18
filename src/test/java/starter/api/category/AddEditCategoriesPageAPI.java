@@ -83,6 +83,22 @@ public class AddEditCategoriesPageAPI {
                 .log().all();
     }
 
+    /**
+     * Deletes a category using DELETE request
+     * This method handles BOTH successful deletion (204) and unauthorized errors
+     * (403)
+     */
+    public void deleteCategory(int categoryId) {
+        SerenityRest.given()
+                .contentType(CONTENT_TYPE_JSON)
+                .header(HEADER_AUTHORIZATION, BEARER_PREFIX + TokenHolder.getToken())
+                .log().all()
+                .when()
+                .delete(BASE_CATEGORIES_ENDPOINT + "/" + categoryId)
+                .then()
+                .log().all();
+    }
+
     // response handling methods
 
     /**

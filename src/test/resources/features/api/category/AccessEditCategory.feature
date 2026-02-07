@@ -1,5 +1,4 @@
 @nonadminapi
-@api-edit-category 
 Feature: Edit Category access control
 
   @api-edit-unauthorized @api-edit-unauthorized-update
