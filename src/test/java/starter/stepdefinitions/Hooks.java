@@ -6,23 +6,47 @@ import io.cucumber.java.Scenario;
 import utils.TokenHolder;
 import io.restassured.response.Response;
 import net.serenitybdd.rest.SerenityRest;
+import net.thucydides.core.webdriver.ThucydidesWebDriverSupport;
+import org.openqa.selenium.WebDriver;
+
 import java.util.List;
 import java.util.Map;
 
-/**
- * Cucumber Hooks for setting up preconditions and cleanup
- * Handles authentication token generation and test data management
- */
 public class Hooks {
 
-    // Store created category IDs for cleanup
-    private static ThreadLocal<List<Integer>> createdCategoryIds = ThreadLocal
-            .withInitial(() -> new java.util.ArrayList<>());
+    // ==================== CRITICAL: Browser Initialization ====================
 
     /**
-     * Hook for @adminapi tagged scenarios
+     * HIGHEST PRIORITY: Initialize browser BEFORE any UI test
+     * This runs FIRST (order=0) to ensure browser is ready
      */
-    @Before("@adminapi")
+    @Before(value = "@ui or @access-add or @access-edit or @add-category or @edit-category or @admin-login", order = 0)
+    public void ensureBrowserIsInitialized() {
+        System.out.println("🌐 [Browser Init] Ensuring WebDriver is ready for UI test...");
+
+        try {
+            // Force Serenity to initialize WebDriver
+            WebDriver driver = ThucydidesWebDriverSupport.getWebdriverManager().getCurrentDriver();
+
+            if (driver != null) {
+                // Clear any previous session data
+                driver.manage().deleteAllCookies();
+                System.out.println("✅ [Browser Init] Browser ready and cookies cleared");
+            } else {
+                System.out.println("⚠️ [Browser Init] Driver was null, reinitializing...");
+                ThucydidesWebDriverSupport.getWebdriverManager().closeCurrentDrivers();
+                driver = ThucydidesWebDriverSupport.getWebdriverManager().getCurrentDriver();
+                System.out.println("✅ [Browser Init] Browser reinitialized successfully");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ [Browser Init] CRITICAL ERROR: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // ==================== API Token Setup ====================
+
+    @Before(value = "@adminapi", order = 10)
     public void setupAdminToken() {
         System.out.println("🔐 Setting up Admin token for @adminapi scenario");
 
@@ -37,10 +61,7 @@ public class Hooks {
         System.out.println("✅ Admin token generated successfully");
     }
 
-    /**
-     * Hook for @nonadminapi tagged scenarios
-     */
-    @Before("@nonadminapi")
+    @Before(value = "@nonadminapi", order = 10)
     public void setupNonAdminToken() {
         System.out.println("🔐 Setting up User token for @nonadminapi scenario");
 
@@ -55,96 +76,52 @@ public class Hooks {
         System.out.println("✅ User token generated successfully");
     }
 
-    /**
-     * Setup test data BEFORE edit tests
-     * Creates a category that can be edited/deleted
-     */
-    @Before("@api-edit-category or @api-delete-category")
-    public void setupTestCategoryForEditOrDelete() {
-        System.out.println("📝 Setting up test category for edit/delete scenario");
+    // ==================== Cleanup Hooks ====================
 
-        try {
-            // Login as admin
-            Response loginResponse = SerenityRest.given()
-                    .contentType("application/json")
-                    .body("{ \"username\": \"admin\", \"password\": \"admin123\" }")
-                    .post("/api/auth/login");
-
-            String adminToken = loginResponse.jsonPath().getString("token");
-
-            // Create a test category
-            Response createResponse = SerenityRest.given()
-                    .contentType("application/json")
-                    .header("Authorization", "Bearer " + adminToken)
-                    .body("{ \"name\": \"EditTest\" }")
-                    .post("/api/categories");
-
-            if (createResponse.statusCode() == 201) {
-                Integer categoryId = createResponse.jsonPath().getInt("id");
-                createdCategoryIds.get().add(categoryId);
-                System.out.println("✅ Test category created with ID: " + categoryId);
-            }
-
-        } catch (Exception e) {
-            System.out.println("⚠️ Failed to setup test category: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Cleanup hook for @api-add-category tagged scenarios
-     */
-    @After("@api-add-category")
+    @After(value = "@api-add-category", order = 50)
     public void cleanupAddCategoryTests() {
         System.out.println("🧹 Cleaning up categories from add tests...");
         cleanupCategoriesByNames(new String[] { "Indoor", "Outdoor", "TestCat01", "Test_Cat" });
     }
 
-    /**
-     * Cleanup hook for @api-edit-category tagged scenarios
-     */
-    @After("@api-edit-category")
+    @After(value = "@api-edit-category", order = 50)
     public void cleanupEditCategoryTests() {
         System.out.println("🧹 Cleaning up categories from edit tests...");
         cleanupCategoriesByNames(new String[] { "EditTest", "Updated", "TestEdit" });
-        cleanupStoredCategoryIds();
     }
 
-    /**
-     * Cleanup hook for @api-delete-category tagged scenarios
-     */
-    @After("@api-delete-category")
-    public void cleanupDeleteCategoryTests() {
-        System.out.println("🧹 Cleaning up categories from delete tests...");
-        cleanupCategoriesByNames(new String[] { "DeleteTest", "ToDelete" });
-        cleanupStoredCategoryIds();
-    }
-
-    /**
-     * Cleanup hook for UI tests
-     */
-    @After("@ui")
+    @After(value = "@ui or @access-add or @access-edit or @add-category or @edit-category or @admin-login", order = 50)
     public void cleanupUITests() {
         System.out.println("🧹 Cleaning up categories from UI tests...");
         cleanupCategoriesByNames(new String[] { "Indoor", "Outdoor", "UITest", "TestCategory" });
     }
 
     /**
-     * Global cleanup - runs after every scenario
+     * Close browser AFTER each UI test (order=100 runs last)
      */
-    @After
-    public void globalCleanup(Scenario scenario) {
-        System.out.println("🔓 Clearing token for scenario: " + scenario.getName());
-        TokenHolder.clearToken();
+    @After(value = "@ui or @access-add or @access-edit or @add-category or @edit-category or @admin-login", order = 100)
+    public void closeBrowserAfterUITest() {
+        System.out.println("🧹 [Browser Cleanup] Closing browser after UI test...");
 
-        // Clear thread-local storage
-        createdCategoryIds.get().clear();
+        try {
+            ThucydidesWebDriverSupport.getWebdriverManager().closeCurrentDrivers();
+            System.out.println("✅ [Browser Cleanup] Browser closed successfully");
+        } catch (Exception e) {
+            System.out.println("⚠️ [Browser Cleanup] Warning: " + e.getMessage());
+        }
     }
 
-    // ==================== HELPER METHODS ====================
-
     /**
-     * Delete categories by names
+     * Global cleanup - runs for ALL scenarios
      */
+    @After(order = 200)
+    public void globalCleanup(Scenario scenario) {
+        System.out.println("🔓 [Global Cleanup] Clearing token for: " + scenario.getName());
+        TokenHolder.clearToken();
+    }
+
+    // ==================== Helper Methods ====================
+
     private void cleanupCategoriesByNames(String[] categoryNames) {
         try {
             String adminToken = getAdminToken();
@@ -153,36 +130,13 @@ public class Hooks {
                 deleteCategoryByName(categoryName, adminToken);
             }
 
-            System.out.println("✅ Cleanup by names completed");
+            System.out.println("✅ Cleanup completed");
 
         } catch (Exception e) {
             System.out.println("⚠️ Cleanup warning: " + e.getMessage());
         }
     }
 
-    /**
-     * Delete categories by stored IDs
-     */
-    private void cleanupStoredCategoryIds() {
-        try {
-            String adminToken = getAdminToken();
-            List<Integer> idsToDelete = createdCategoryIds.get();
-
-            for (Integer categoryId : idsToDelete) {
-                deleteCategoryById(categoryId, adminToken);
-            }
-
-            createdCategoryIds.get().clear();
-            System.out.println("✅ Cleanup by IDs completed");
-
-        } catch (Exception e) {
-            System.out.println("⚠️ Cleanup warning: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Get admin token for cleanup operations
-     */
     private String getAdminToken() {
         Response loginResponse = SerenityRest.given()
                 .contentType("application/json")
@@ -192,9 +146,6 @@ public class Hooks {
         return loginResponse.jsonPath().getString("token");
     }
 
-    /**
-     * Delete a category by name
-     */
     private void deleteCategoryByName(String categoryName, String adminToken) {
         try {
             Response categoriesResponse = SerenityRest.given()
@@ -207,45 +158,20 @@ public class Hooks {
                 for (Map<String, Object> category : categories) {
                     if (categoryName.equals(category.get("name"))) {
                         Object categoryId = category.get("id");
-                        deleteCategoryById((Integer) categoryId, adminToken);
+
+                        Response deleteResponse = SerenityRest.given()
+                                .header("Authorization", "Bearer " + adminToken)
+                                .delete("/api/categories/" + categoryId);
+
+                        if (deleteResponse.statusCode() == 200 || deleteResponse.statusCode() == 204) {
+                            System.out.println("🗑️  Deleted category: " + categoryName);
+                        }
                         break;
                     }
                 }
             }
         } catch (Exception e) {
-            // Silently ignore - category might not exist
+            // Silently ignore
         }
-    }
-
-    /**
-     * Delete a category by ID
-     */
-    private void deleteCategoryById(Integer categoryId, String adminToken) {
-        try {
-            Response deleteResponse = SerenityRest.given()
-                    .header("Authorization", "Bearer " + adminToken)
-                    .delete("/api/categories/" + categoryId);
-
-            if (deleteResponse.statusCode() == 200 || deleteResponse.statusCode() == 204) {
-                System.out.println("🗑️  Deleted category ID: " + categoryId);
-            }
-        } catch (Exception e) {
-            // Silently ignore deletion errors
-        }
-    }
-
-    /**
-     * Public method to store category ID for cleanup
-     */
-    public static void storeCategoryIdForCleanup(Integer categoryId) {
-        createdCategoryIds.get().add(categoryId);
-    }
-
-    /**
-     * Public method to get a test category ID for edit/delete tests
-     */
-    public static Integer getTestCategoryId() {
-        List<Integer> ids = createdCategoryIds.get();
-        return ids.isEmpty() ? null : ids.get(0);
     }
 }
